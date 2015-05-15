@@ -1,2 +1,1 @@
-CS260Assign1
-============
+General repository.
