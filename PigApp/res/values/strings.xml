@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Pig</string>
+    <string name="action_settings">Settings</string>
+    <string name="roll_button">ROLL</string>
+    <string name="hold_button">HOLD</string>
+    <string name="press_roll">Press ROLL!</string>
+    <string name="turn_score_title">Score for Turn:</string>
+    <string name="human">Human</string>
+    <string name="computer">Computer</string>
+    
+    <integer name="turn_total">0</integer>
+    <integer name="hum_score_val">0</integer>
+    <integer name="comp_score_val">0</integer>
+
+</resources>
