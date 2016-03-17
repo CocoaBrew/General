@@ -1,0 +1,67 @@
+<!-- Dice image credits: http://etc.usf.edu/clipart/galleries/579-dice --> 
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    tools:context="cshw.pig.PigGame" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:text="@string/human" />
+    <TextView android:id="@+id/hum_total_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left|top" 
+        android:text="@integer/hum_score_val"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right|top"
+        android:text="@string/computer" />
+    <TextView android:id="@+id/comp_total_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right|top" 
+        android:text="@integer/comp_score_val"/>
+    
+    <ImageView android:id="@+id/roll_result"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:src="@drawable/die_start" 
+        android:gravity=""/>
+    
+    <Button android:id="@+id/roll_die"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/roll_button"
+        android:gravity="center_horizontal"
+        android:clickable="true"
+        android:onClick="rollDie"/>
+    <Button android:id="@+id/hold_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/hold_button"
+        android:gravity="center_horizontal"
+        android:clickable="false"
+        android:onClick="holdScore"/>
+   
+    <TextView 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/turn_score_title"/>
+    <TextView android:id="@+id/turn_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal|bottom"
+        android:text="@integer/turn_total"/>
+
+</LinearLayout>
