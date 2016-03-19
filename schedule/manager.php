@@ -28,5 +28,6 @@
     
     <p>
       Make a new list of tutors <a href="tutors.php">here</a>.
+    </p>
   </body>
 </html>
