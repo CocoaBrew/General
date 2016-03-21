@@ -1,10 +1,37 @@
+h1
+{
+  text-align: center;
+}
+
+label
+{
+  font-weight: bold;
+}
+
 #times
 {
   margin-left: 1cm;
+}
+
+#loginframe
+{
+  border: 3pt;
+  border-color: Black;
+  border-style: solid;
+  padding: .5cm;
+  margin-right: 8cm;
+  margin-left: 8cm;
+  text-align: center;
 }
 
 .singletutor
 {
   margin-top: 1cm;
   margin-bottom: 1cm;
+}
+
+.comment
+{
+  font-style: italic;
+  font-size: .8em;
 }

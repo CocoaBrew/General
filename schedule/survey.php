@@ -44,6 +44,7 @@
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>
           </select>
+          <span class="comment">(CTRL+click for multiple)</span>
         </p>
         
         <p>
@@ -56,6 +57,7 @@
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>
           </select>
+          <span class="comment">(CTRL+click for multiple)</span>
         </p>
         
         <button type="submit" id="finish" disabled="true">

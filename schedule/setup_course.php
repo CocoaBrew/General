@@ -119,6 +119,5 @@
       </form>
     </section>
     
-    <script src="course.js"></script>
   </body>
 </html>
