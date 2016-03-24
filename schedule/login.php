@@ -3,14 +3,23 @@
   error_reporting(E_ALL);
   ini_set('display_errors', '1');
   
-  $pid = 0;
-  if(isset($_POST['pid'])):
-    $pid = trim(htmlspecialchars($_POST['pid']));
-    
-  else:
-    header("login.php");
-  endif;
+  /*require_once('../dblogin.php');
   
+  $db = new PDO("mysql:host=$db_hostname;dbname=dac3251;charset=utf8",
+    $db_username, $db_password,
+    array(PDO::ATTR_EMULATE_PREPARES => false,
+          PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+  */
+  $loggedin = false;
+  $pid = 0;
+  
+  if(!(isset($_SESSION['pid']))):
+    if(isset($_POST['pid'])):
+      $pid = trim(htmlspecialchars($_POST['pid']));
+    else:
+      header('login.php');
+    endif;
+  endif;
   
   
 ?>

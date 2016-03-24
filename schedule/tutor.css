@@ -8,6 +8,16 @@ label
   font-weight: bold;
 }
 
+body
+{
+  font-family: sans-serif;
+}
+
+select
+{
+  vertical-align: middle;
+}
+
 #times
 {
   margin-left: 1cm;
@@ -34,4 +44,9 @@ label
 {
   font-style: italic;
   font-size: .8em;
+}
+
+.biglabel
+{
+  font-size: 1.2em;
 }

@@ -66,11 +66,24 @@
             </p>
             
             <p>
+              <label for="tuttype<?= $tutor ?>">
+                Tutor's Education Level: 
+              </label>
+              <label for="undergrad">Undergraduate</label>
+              <input type="radio" name="tuttype<?= $tutor ?>"
+                id="undergrad" value="ug" />
+              <label for="grad">Graduate</label>
+              <input type="radio" name="tuttype<?= $tutor ?>"
+                id="grad" value="gr" />
+            </p>
+            
+            <p>
               <label for="hrscleared<?= $tutor ?>">
                 Number of Hours Cleared to Work Each Week:
               </label>
               <input type="number" name="hrscleared<?= $tutor ?>"
-                id="hrscleared<?= $tutor ?>" pattern="[0-9]+" />
+                id="hrscleared<?= $tutor ?>" pattern="[0-9]+" 
+                required="required" />
             </p>
           </div>
         <?php endfor; ?>
