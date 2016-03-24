@@ -3,13 +3,52 @@
   error_reporting(E_ALL);
   ini_set('display_errors', '1');
   
-  $tutorcount = 0;
+  require('../dblogin_sched.php');
   
+  $tutorcount = 0;
   if (ISSET($_POST['numtutors'])):
     $tutorcount = trim(htmlspecialchars($_POST['numtutors']));
   endif;
   
   print_r($_POST);
+  
+  $db = new PDO("mysql:host=$db_hostname;dbname=schedule;charset=utf8",
+    $db_username, $db_password,
+    array(PDO::ATTR_EMULATE_PREPARES => false,
+          PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+  
+  /*$query = "create table tutors (
+    id varchar(255) not null,
+    name varchar(255),
+    phone varchar(255),
+    education varchar(255),
+    work_hrs varchar(255),
+    primary key (id))";
+  $stmt = $db->prepare($query);
+  $stmt->execute();*/
+  
+  # needs appropriate isset existence checks
+  for ($i = 0; $i < $tutorcount; $i++):
+    $id_val = 'idnum' . $i;
+    $fname_val = 'fname' . $i;
+    $lname_val = 'lname' . $i;
+    $tutor_id = trim(htmlspecialchars($_POST[$id_val]));
+    $fname = trim(htmlspecialchars($_POST[$fname_val]));
+    $lname = trim(htmlspecialchars($_POST[$lname_val]));
+    $tut_name = $fname . $lname;
+    $ed_val = 'tuttype' . $i;
+    $ed_level = trim(htmlspecialchars($_POST[$ed_val]));
+    $hrs_val = 'hrscleared' . $i;
+    $cleared_hrs = trim(htmlspecialchars($_POST[$hrs_val]));
+    $query = "insert into tutors (id, name, education, work_hrs) 
+      values (:id, :name, :edu, :hrs)";
+    $stmt = $db->prepare($query);
+    $stmt->bindParam(':id', $tutor_id, PDO::PARAM_STR);
+    $stmt->bindParam(':name', $tut_name, PDO::PARAM_STR);
+    $stmt->bindParam(':edu', $ed_level, PDO::PARAM_STR);
+    $stmt->bindParam(':hrs', $cleared_hrs, PDO::PARAM_STR);
+    $stmt->execute();
+  endfor;
   
 ?>
 <!DOCTYPE html>

@@ -11,8 +11,12 @@
     $db_username, $db_password,
     array(PDO::ATTR_EMULATE_PREPARES => false,
           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+          
+  /* 
+    Session addition 
+  */
   
-  $name = "test8Spring1732"; // not a fixed name
+  $name = "test8Spring1732"; // not a fixed name; taken from session
 
   $query = "select sun, mon, tue, wed, thu, fri, sat from courses";
   $stmt = $db->prepare($query);
@@ -20,7 +24,6 @@
   $stmt->execute();
   $week_array = $stmt->fetchAll();
   
-  //$hour_data = 0;
   foreach ($week_array as $day):
     $sunhrs = explode('/', $day[0]);
     $monhrs = explode('/', $day[1]);
@@ -48,6 +51,10 @@
   
   print_r($hourlist);
   
+  
+  # get name from db/session for on-screen display
+  $name = "jabberwocky";
+  
 ?>
 <!DOCTYPE html>
 <html>
@@ -63,15 +70,7 @@
 
     <section id="info">
       <form action="response.php" method="post" id="getinfo">
-        <p>
-          <label for="fname">First Name: </label>
-          <input type="text" name="fname" id="fname" required="required"/>
-        </p>
-        
-        <p>
-          <label for="lname">Last Name: </label>
-          <input type="text" name="lname" id="lname" required="required"/>
-        </p>
+        <h2>Name: <?= $name ?></h2>
         
         <p>
           <label for="phone">Phone Number: </label>
