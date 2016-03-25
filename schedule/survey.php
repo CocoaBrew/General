@@ -49,8 +49,7 @@
     $m++;
   endforeach;
   
-  print_r($hourlist);
-  
+  //print_r($hourlist);
   
   # get name from db/session for on-screen display
   $name = "jabberwocky";

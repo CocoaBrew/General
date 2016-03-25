@@ -11,3 +11,12 @@ create table courses(
   sat varchar(255),
   primary key (title)
 );
+
+create table tutors(
+  id varchar(255) not null,
+  name varchar(255),
+  phone varchar(255),
+  education varchar(255),
+  work_hrs varchar(255),
+  primary key (id)
+);

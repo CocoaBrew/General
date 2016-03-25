@@ -5,88 +5,97 @@
   
   require('../dblogin_sched.php');
   
-  //print_r($_POST);
+  print_r($_POST);
   
-  if ((isset($_POST['sunstart']) && isset($_POST['sunend'])) ||
-    (isset($_POST['monstart']) && isset($_POST['monend'])) || 
-      (isset($_POST['tuestart']) && isset($_POST['tueend'])) ||
-        (isset($_POST['wedstart']) && isset($_POST['wedend'])) ||
-          (isset($_POST['thustart']) && isset($_POST['thuend'])) ||
-            (isset($_POST['fristart']) && isset($_POST['friend'])) ||
-              (isset($_POST['satstart']) && isset($_POST['satend']))):
-    $su_beg = trim(htmlspecialchars($_POST['sunstart']));
-    $su_end = trim(htmlspecialchars($_POST['sunend']));
-    $sun = $su_beg . '/' . $su_end;
+  # messaging needs work
+  $message = '';
   
-    $mo_beg = trim(htmlspecialchars($_POST['monstart']));
-    $mo_end = trim(htmlspecialchars($_POST['monend']));
-    $mon = $mo_beg . '/' . $mo_end;
+  if (isset($_POST['coursename']) && $_POST['coursename'] != ''):
+    if ((isset($_POST['sunstart']) && isset($_POST['sunend'])) ||
+      (isset($_POST['monstart']) && isset($_POST['monend'])) || 
+        (isset($_POST['tuestart']) && isset($_POST['tueend'])) ||
+          (isset($_POST['wedstart']) && isset($_POST['wedend'])) ||
+            (isset($_POST['thustart']) && isset($_POST['thuend'])) ||
+              (isset($_POST['fristart']) && isset($_POST['friend'])) ||
+                (isset($_POST['satstart']) && isset($_POST['satend']))):
+      $su_beg = trim(htmlspecialchars($_POST['sunstart']));
+      $su_end = trim(htmlspecialchars($_POST['sunend']));
+      $sun = $su_beg . '/' . $su_end;
   
-    $tu_beg = trim(htmlspecialchars($_POST['tuestart']));
-    $tu_end = trim(htmlspecialchars($_POST['tueend']));
-    $tue = $tu_beg . '/' . $tu_end;
+      $mo_beg = trim(htmlspecialchars($_POST['monstart']));
+      $mo_end = trim(htmlspecialchars($_POST['monend']));
+      $mon = $mo_beg . '/' . $mo_end;
   
-    $we_beg = trim(htmlspecialchars($_POST['wedstart']));
-    $we_end = trim(htmlspecialchars($_POST['wedend']));
-    $wed = $we_beg . '/' . $we_end;
+      $tu_beg = trim(htmlspecialchars($_POST['tuestart']));
+      $tu_end = trim(htmlspecialchars($_POST['tueend']));
+      $tue = $tu_beg . '/' . $tu_end;
   
-    $th_beg = trim(htmlspecialchars($_POST['thustart']));
-    $th_end = trim(htmlspecialchars($_POST['thuend']));
-    $thu = $th_beg . '/' . $th_end;
+      $we_beg = trim(htmlspecialchars($_POST['wedstart']));
+      $we_end = trim(htmlspecialchars($_POST['wedend']));
+      $wed = $we_beg . '/' . $we_end;
   
-    $fr_beg = trim(htmlspecialchars($_POST['fristart']));
-    $fr_end = trim(htmlspecialchars($_POST['friend']));
-    $fri = $fr_beg . '/' . $fr_end;
+      $th_beg = trim(htmlspecialchars($_POST['thustart']));
+      $th_end = trim(htmlspecialchars($_POST['thuend']));
+      $thu = $th_beg . '/' . $th_end;
   
-    $sa_beg = trim(htmlspecialchars($_POST['satstart']));
-    $sa_end = trim(htmlspecialchars($_POST['satend']));
-    $sat = $sa_beg . '/' . $sa_end;
+      $fr_beg = trim(htmlspecialchars($_POST['fristart']));
+      $fr_end = trim(htmlspecialchars($_POST['friend']));
+      $fri = $fr_beg . '/' . $fr_end;
+  
+      $sa_beg = trim(htmlspecialchars($_POST['satstart']));
+      $sa_end = trim(htmlspecialchars($_POST['satend']));
+      $sat = $sa_beg . '/' . $sa_end;
     
-    $db = new PDO("mysql:host=$db_hostname;dbname=schedule;charset=utf8",
-      $db_username, $db_password,
-      array(PDO::ATTR_EMULATE_PREPARES => false,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+      $db = new PDO("mysql:host=$db_hostname;dbname=schedule;charset=utf8",
+        $db_username, $db_password,
+        array(PDO::ATTR_EMULATE_PREPARES => false,
+              PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
             
-    $coursename = trim(htmlspecialchars($_POST['coursename']));
-    $year = trim(htmlspecialchars($_POST['termyr']));
-    $term = '';
-    if (isset($_POST['termsem'])):
-      $term = ucfirst(trim(htmlspecialchars($_POST['termsem'])));
+      $coursename = trim(htmlspecialchars($_POST['coursename']));
+      $year = trim(htmlspecialchars($_POST['termyr']));
+      $term = '';
+      if (isset($_POST['termsem'])):
+        $term = ucfirst(trim(htmlspecialchars($_POST['termsem'])));
+      endif;
+
+      $title = $coursename . $term . $year;
+    
+      $query = "insert into courses (title, sun, mon, tue, wed, thu, fri, sat)
+        values (:title, :sun, :mon, :tue, :wed, :thu, :fri, :sat)";
+      $stmt = $db->prepare($query);
+      $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+      $stmt->bindParam(':sun', $sun, PDO::PARAM_STR);
+      $stmt->bindParam(':mon', $mon, PDO::PARAM_STR);
+      $stmt->bindParam(':tue', $tue, PDO::PARAM_STR);
+      $stmt->bindParam(':wed', $wed, PDO::PARAM_STR);
+      $stmt->bindParam(':thu', $thu, PDO::PARAM_STR);
+      $stmt->bindParam(':fri', $fri, PDO::PARAM_STR);
+      $stmt->bindParam(':sat', $sat, PDO::PARAM_STR);
+      $stmt->execute();
+  
+      /*$query = "create table $title (
+        id varchar(255),
+        sbusy varchar(255),
+        mbusy varchar(255),
+        tbusy varchar(255),
+        wbusy varchar(255),
+        rbusy varchar(255),
+        fbusy varchar(255),
+        qbusy varchar(255),
+        spref varchar(255),
+        mpref varchar(255),
+        tpref varchar(255),
+        wpref varchar(255),
+        rpref varchar(255),
+        fpref varchar(255),
+        qpref varchar(255))";
+      $stmt = $db->prepare($query);
+      $stmt->execute();*/
+      
+      $message = "Setup Complete.";
+    else:
+      $message = "Setup Failed. Please Try Again.";
     endif;
-    
-    $title = $coursename . $term . $year;
-    
-    $query = "insert into courses (title, sun, mon, tue, wed, thu, fri, sat)
-      values (:title, :sun, :mon, :tue, :wed, :thu, :fri, :sat)";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-    $stmt->bindParam(':sun', $sun, PDO::PARAM_STR);
-    $stmt->bindParam(':mon', $mon, PDO::PARAM_STR);
-    $stmt->bindParam(':tue', $tue, PDO::PARAM_STR);
-    $stmt->bindParam(':wed', $wed, PDO::PARAM_STR);
-    $stmt->bindParam(':thu', $thu, PDO::PARAM_STR);
-    $stmt->bindParam(':fri', $fri, PDO::PARAM_STR);
-    $stmt->bindParam(':sat', $sat, PDO::PARAM_STR);
-    $stmt->execute();
-    
-    /*$query = "create table $title (
-      id varchar(255),
-      sbusy varchar(255),
-      mbusy varchar(255),
-      tbusy varchar(255),
-      wbusy varchar(255),
-      rbusy varchar(255),
-      fbusy varchar(255),
-      qbusy varchar(255),
-      spref varchar(255),
-      mpref varchar(255),
-      tpref varchar(255),
-      wpref varchar(255),
-      rpref varchar(255),
-      fpref varchar(255),
-      qpref varchar(255))";
-    $stmt = $db->prepare($query);
-    $stmt->execute();*/
   endif;
     
 ?>
@@ -101,6 +110,10 @@
 
   <body>
     <h1>Course</h1>
+    
+    <p class="message">
+      <?= $message ?>
+    </p>
     
     <section id="courseinfo">
       <form id="makecourse" action="setup_course.php" method="post">        

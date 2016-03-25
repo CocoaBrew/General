@@ -10,45 +10,46 @@
     $tutorcount = trim(htmlspecialchars($_POST['numtutors']));
   endif;
   
-  print_r($_POST);
-  
   $db = new PDO("mysql:host=$db_hostname;dbname=schedule;charset=utf8",
     $db_username, $db_password,
     array(PDO::ATTR_EMULATE_PREPARES => false,
           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
   
-  /*$query = "create table tutors (
-    id varchar(255) not null,
-    name varchar(255),
-    phone varchar(255),
-    education varchar(255),
-    work_hrs varchar(255),
-    primary key (id))";
-  $stmt = $db->prepare($query);
-  $stmt->execute();*/
+  $message = '';
   
-  # needs appropriate isset existence checks
-  for ($i = 0; $i < $tutorcount; $i++):
-    $id_val = 'idnum' . $i;
-    $fname_val = 'fname' . $i;
-    $lname_val = 'lname' . $i;
-    $tutor_id = trim(htmlspecialchars($_POST[$id_val]));
-    $fname = trim(htmlspecialchars($_POST[$fname_val]));
-    $lname = trim(htmlspecialchars($_POST[$lname_val]));
-    $tut_name = $fname . $lname;
-    $ed_val = 'tuttype' . $i;
-    $ed_level = trim(htmlspecialchars($_POST[$ed_val]));
-    $hrs_val = 'hrscleared' . $i;
-    $cleared_hrs = trim(htmlspecialchars($_POST[$hrs_val]));
-    $query = "insert into tutors (id, name, education, work_hrs) 
-      values (:id, :name, :edu, :hrs)";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(':id', $tutor_id, PDO::PARAM_STR);
-    $stmt->bindParam(':name', $tut_name, PDO::PARAM_STR);
-    $stmt->bindParam(':edu', $ed_level, PDO::PARAM_STR);
-    $stmt->bindParam(':hrs', $cleared_hrs, PDO::PARAM_STR);
-    $stmt->execute();
-  endfor;
+  if (isset($_POST['submitinfo']) && $tutorcount != 0):
+    if (isset($_POST['lname0']) && isset($_POST['idnum0']) && 
+      isset($_POST['email0']) && isset($_POST['tuttype0']) && 
+        isset($_POST['hrscleared0'])):
+      for ($i = 0; $i < $tutorcount; $i++):
+        $id_val = 'idnum' . $i;
+        $fname_val = 'fname' . $i;
+        $lname_val = 'lname' . $i;
+        $tutor_id = trim(htmlspecialchars($_POST[$id_val]));
+        $fname = trim(htmlspecialchars($_POST[$fname_val]));
+        $lname = trim(htmlspecialchars($_POST[$lname_val]));
+        $tut_name = $fname . $lname;
+        $ed_val = 'tuttype' . $i;
+        $ed_level = trim(htmlspecialchars($_POST[$ed_val]));
+        $hrs_val = 'hrscleared' . $i;
+        $cleared_hrs = trim(htmlspecialchars($_POST[$hrs_val]));
+        $query = "insert into tutors (id, name, education, work_hrs) 
+          values (:id, :name, :edu, :hrs)";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':id', $tutor_id, PDO::PARAM_STR);
+        $stmt->bindParam(':name', $tut_name, PDO::PARAM_STR);
+        $stmt->bindParam(':edu', $ed_level, PDO::PARAM_STR);
+        $stmt->bindParam(':hrs', $cleared_hrs, PDO::PARAM_STR);
+        $stmt->execute();
+      endfor;
+    
+      $message = "Submission Successful.";
+    else:
+      $message = "Submission Failed. Please Try Again.";
+    endif;
+  endif;
+  
+  print_r($_POST);
   
 ?>
 <!DOCTYPE html>
@@ -62,6 +63,10 @@
 
   <body>
     <h1>Tutors</h1>
+    
+    <p class="message">
+      <?= $message ?>
+    </p>
     
     <p>
       <form id="tutortotal" action="tutors.php" method="post">
@@ -130,9 +135,8 @@
         <input type="hidden" name="tutorcount" value="<?= $tutorcount ?>" />
         
         <p>
-          <button type="submit" id="addinfo">
-            Submit Info
-          </button>
+          <input type="submit" form="addtutors" name="submitinfo" 
+            id="addinfo" value="Submit Info" />
         </p>
       </form>
     </section>
