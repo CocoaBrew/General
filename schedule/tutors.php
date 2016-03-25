@@ -28,7 +28,7 @@
         $tutor_id = trim(htmlspecialchars($_POST[$id_val]));
         $fname = trim(htmlspecialchars($_POST[$fname_val]));
         $lname = trim(htmlspecialchars($_POST[$lname_val]));
-        $tut_name = $fname . $lname;
+        $tut_name = $fname . '+' . $lname;
         $ed_val = 'tuttype' . $i;
         $ed_level = trim(htmlspecialchars($_POST[$ed_val]));
         $hrs_val = 'hrscleared' . $i;

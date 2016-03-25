@@ -14,7 +14,7 @@
   if (isset($_POST['fname']) && isset($_POST['lname'])):
     $fname = trim(htmlspecialchars($_POST['fname']));
     $lname = trim(htmlspecialchars($_POST['lname']));
-    $tut_name = $fname . $lname;
+    $tut_name = $fname . '+' . $lname;
     if (isset($_POST['phone'])):
       $phone = trim(htmlspecialchars($_POST['phone']));
     endif;
