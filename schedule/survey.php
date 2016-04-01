@@ -3,6 +3,8 @@
   error_reporting(E_ALL);
   ini_set('display_errors', '1');
 
+  session_start();
+  
   print_r($_POST);
 
   require('../dblogin_sched.php');
@@ -11,10 +13,6 @@
     $db_username, $db_password,
     array(PDO::ATTR_EMULATE_PREPARES => false,
           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
-          
-  /* 
-    Session addition 
-  */
   
   $name = "test8Spring1732"; // not a fixed name; taken from session
 
@@ -52,7 +50,8 @@
   //print_r($hourlist);
   
   # get name from db/session for on-screen display
-  $name = "jabberwocky";
+  $name_list = explode($_SESSION['name'], '+');
+  $name = $name_list[0] + ' ' + $name_list[1];
   
 ?>
 <!DOCTYPE html>

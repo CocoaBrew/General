@@ -3,6 +3,8 @@
   error_reporting(E_ALL);
   ini_set('display_errors', '1');
   
+  session_start();
+  
   require('contact.php');
   require('../dblogin_sched.php');
   
@@ -38,6 +40,10 @@
     $id = $_SESSION['id'];
     $query = "insert into tutors (phone) values (:phone) where id = $id";
     
+    session_unset();
+    session_destroy();
+    
+    print_r($_SESSION);
   
   else:
     header('Location: survey.php');
