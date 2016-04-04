@@ -1,5 +1,9 @@
 use schedule;
 
+drop table courses;
+drop table tutors;
+drop table available;
+
 create table courses(
   title varchar(255) not null,
   sun varchar(255),
@@ -36,11 +40,3 @@ create table available(
   fpref varchar(255),
   primary key (id)
 );
-
-create table admin(
-  id varchar(255) not null,
-  name varchar(255),
-  primary key (id)
-);
-
-insert into admin(id, name) values (8887, 'Dan+C');

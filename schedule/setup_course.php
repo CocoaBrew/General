@@ -4,11 +4,37 @@
   ini_set('display_errors', '1');
   
   require('../dblogin_sched.php');
+  require('contact.php');
   
-  print_r($_POST);
+  # Functions for checking the validity and security
+  # of an email address
+  function isInjected($email_str)
+  {
+    $injections = array('(\n+)', '(\r+)', '(\t+)', '(%0A+)', '(%0D+)',
+      '(%08+)', '(%09+)');
+      
+    $inject = join('|', $injections);
+    $inject = "/$inject/i";
+    
+    if (preg_match($inject, $email_str)):
+      return true;
+    else:
+      return false;
+    endif;
+  }
   
-  # messaging needs work
+  function isFiltered($email_str)
+  {
+    $filtered_email = filter_var($email_str, FILTER_VALIDATE_EMAIL);
+    if ($filtered_email):
+      return true;
+    else:
+      return false;
+    endif;
+  }  
+  
   $message = '';
+  $success = false;
   
   if (isset($_POST['coursename']) && $_POST['coursename'] != ''):
     if ((isset($_POST['sunstart']) && isset($_POST['sunend'])) ||
@@ -16,8 +42,7 @@
         (isset($_POST['tuestart']) && isset($_POST['tueend'])) ||
           (isset($_POST['wedstart']) && isset($_POST['wedend'])) ||
             (isset($_POST['thustart']) && isset($_POST['thuend'])) ||
-              (isset($_POST['fristart']) && isset($_POST['friend'])) ||
-                (isset($_POST['satstart']) && isset($_POST['satend']))):
+              (isset($_POST['fristart']) && isset($_POST['friend']))):
       $su_beg = trim(htmlspecialchars($_POST['sunstart']));
       $su_end = trim(htmlspecialchars($_POST['sunend']));
       $sun = $su_beg . '/' . $su_end;
@@ -41,27 +66,16 @@
       $fr_beg = trim(htmlspecialchars($_POST['fristart']));
       $fr_end = trim(htmlspecialchars($_POST['friend']));
       $fri = $fr_beg . '/' . $fr_end;
-  
-      $sa_beg = trim(htmlspecialchars($_POST['satstart']));
-      $sa_end = trim(htmlspecialchars($_POST['satend']));
-      $sat = $sa_beg . '/' . $sa_end;
     
       $db = new PDO("mysql:host=$db_hostname;dbname=schedule;charset=utf8",
         $db_username, $db_password,
         array(PDO::ATTR_EMULATE_PREPARES => false,
               PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
             
-      $coursename = trim(htmlspecialchars($_POST['coursename']));
-      $year = trim(htmlspecialchars($_POST['termyr']));
-      $term = '';
-      if (isset($_POST['termsem'])):
-        $term = ucfirst(trim(htmlspecialchars($_POST['termsem'])));
-      endif;
-
-      $title = $coursename . $term . $year;
+      $title = trim(htmlspecialchars($_POST['coursename']));
     
-      $query = "insert into courses (title, sun, mon, tue, wed, thu, fri, sat)
-        values (:title, :sun, :mon, :tue, :wed, :thu, :fri, :sat)";
+      $query = "insert into courses (title, sun, mon, tue, wed, thu, fri)
+        values (:title, :sun, :mon, :tue, :wed, :thu, :fri)";
       $stmt = $db->prepare($query);
       $stmt->bindParam(':title', $title, PDO::PARAM_STR);
       $stmt->bindParam(':sun', $sun, PDO::PARAM_STR);
@@ -70,31 +84,59 @@
       $stmt->bindParam(':wed', $wed, PDO::PARAM_STR);
       $stmt->bindParam(':thu', $thu, PDO::PARAM_STR);
       $stmt->bindParam(':fri', $fri, PDO::PARAM_STR);
-      $stmt->bindParam(':sat', $sat, PDO::PARAM_STR);
       $stmt->execute();
-  
-      /*$query = "create table $title (
-        id varchar(255),
-        sbusy varchar(255),
-        mbusy varchar(255),
-        tbusy varchar(255),
-        wbusy varchar(255),
-        rbusy varchar(255),
-        fbusy varchar(255),
-        qbusy varchar(255),
-        spref varchar(255),
-        mpref varchar(255),
-        tpref varchar(255),
-        wpref varchar(255),
-        rpref varchar(255),
-        fpref varchar(255),
-        qpref varchar(255))";
+      
+      # Send emails with survey link
+      $query = "select name, email from tutors";
       $stmt = $db->prepare($query);
-      $stmt->execute();*/
+      $stmt->execute();
+      $tutorinfo = $stmt->fetchAll();
+      foreach ($tutorinfo as $tutor):
+        $emailadd = $tutor[1];
+        $survey_addr = $survey_url + "?c=$title";
+        $namelist = explode('+', $tutor[0]);
+        $subject = "Availability Survey";
+        $content = "
+          <html>
+          <head>
+            <title>Availability Survey</title>
+          </head>
+          <body>
+            <p>
+              $namelist[0] $namelist[1], <br /><br />
+              You are currently listed as a tutor for the upcoming 
+              semester. <br />
+              Please take a few minutes and fill out this survey regarding
+              your schedule and times you are available for tutoring.
+            </p>
+            <br />
+            <p>
+              <a href=$survey_addr>Tutoring Survey</a>
+            </p>
+            <br />
+            <p>
+              $contact_name
+            </p>
+          </body>
+          </html>
+        ";
+        $headers = "From: $contact_name <$contact_email>" . "\r\n";
+        $headers .= "Content-type: text/html; charset=utf-8" . "\r\n";
+        if (isFiltered($emailadd) && !isInjected($emailadd)):
+          mail($emailadd, $subject, $content, $headers);
+        else:
+          $subj = "Availability Survey: Email Issue";
+          $alt_content = "There was an issue with $namelist[0] $namelist[1]'s
+            email.";
+          $alt_headers = "From: Scheduling System <$contact_email>";
+          mail($contact_email, $subj, $alt_content, $alt_headers);
+        endif;
+      endforeach;
       
       $message = "Setup Complete.";
+      $success = true;
     else:
-      $message = "Setup Failed. Please Try Again.";
+      $message = "Course Setup Failed. Please Try Again.";
     endif;
   endif;
     
@@ -115,29 +157,13 @@
       <?= $message ?>
     </p>
     
+    <?php if (!$success): ?>
     <section id="courseinfo">
       <form id="makecourse" action="setup_course.php" method="post">        
         <p>
-          <label for="coursename">
-            Course Name (or Number): 
-          </label>
+          <label for="coursename">Course Name: </label>
           <input type="text" name="coursename" id="coursename" 
             required="required" placeholder="e.g., Math200, Calc2" />
-        </p>
-            
-        <p>
-          <label for="termsem">Term Semester: </label>
-          <label for="fall">Fall: </label>
-          <input type="radio" name="termsem" id="fall" value="fall"/>
-          <label for="spring">Spring: </label>
-          <input type="radio" name="termsem" id="spring" value="spring"/>
-        </p>
-          
-        <p>
-          <label for="termyr">Term Year: </label>
-          <input type="text" name="termyr" id="termyr" 
-            pattern="[0-9]{4}" placeholder="e.g., 1941" 
-            required="required"/>
         </p>
         
         <p>
@@ -193,15 +219,6 @@
             <input type="time" name="friend" id="f2" placeholder="1800"/>
           </p>
           
-          <p>
-            <label>Saturday &mdash; </label>
-            <label for="sa1">From: </label>
-            <input type="time" name="satstart" id="sa1" placeholder="0900"/>
-            <label for="sa2">To: </label>
-            <input type="time" name="satend" id="sa2" placeholder="1800"/>
-          </p>
-        </div>
-        
         <p>
           <input type="checkbox" name="verify" value="true" id="verify"
             required="required" /> 
@@ -216,5 +233,13 @@
       </form>
     </section>
     
+    <?php else: ?>
+    
+    <p>
+      Return <a href="manager.php">home</a>, 
+      or <a href="logout.php">logout</a>.
+    </p>
+    
+    <?php endif; ?>
   </body>
 </html>

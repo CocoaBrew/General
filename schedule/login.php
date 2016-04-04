@@ -4,39 +4,58 @@
   ini_set('display_errors', '1');
   
   session_start();
+    
+  require_once('../dblogin_sched.php');
   
-  require_once('../dblogin.php');
-  
-  db = new PDO("mysql:host=$db_hostname;dbname=dac3251;charset=utf8",
+  $db = new PDO("mysql:host=$db_hostname;dbname=schedule;charset=utf8",
     $db_username, $db_password,
     array(PDO::ATTR_EMULATE_PREPARES => false,
           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
   
   $loggedin = false;
-  $isadmin = false;
   $name = '';
+  if (isset($_GET['c'])):
+    $_SESSION['course'] = trim(htmlspecialchars($_GET['c']));
+  endif;
   
-  if(!(isset($_SESSION['name']))):
+  if(!(isset($_SESSION["name"]))):
     if(isset($_POST['pid'])):
       $pid = trim(htmlspecialchars($_POST['pid']));
-      $query = "select name from tutors where id = :pid";
+      $query = "select name from admin where id = :pid";
       $stmt = $db->prepare($query);
-      $stmt->bindParam(':id', $pid, PDO::PARAM_STR);
+      $stmt->bindParam(':pid', $pid, PDO::PARAM_STR);
       $stmt->execute();
       $ret_vals = $stmt->fetchAll();
       if (count($ret_vals) == 1):
-        $namelist = $ret_vals[0];
+        $name = $ret_vals[0]["name"];
+        $_SESSION["admin"] = 'true';
+        $_SESSION["name"] = $name;
+        $isadmin = true;
+        header('Location: manager.php');
+      else:
+        $query = "select name from tutors where id = :pid";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':pid', $pid, PDO::PARAM_STR);
+        $stmt->execute();
+        $ret_vals = $stmt->fetchAll();
+        if (count($ret_vals) == 1):
+          $name = $ret_vals[0]["name"];
+          $_SESSION["name"] = $name;
+          if (isset($_SESSION['course'])):
+            header("Location: survey.php");
+          else:
+            header('Location: logout.php');
+          endif;
+        endif;
       endif;
-      $_SESSION['name'] = $name;
-    else:
-      header('login.php');
     endif;
   else:
     $loggedin = true;
   endif;
   
-  
-  
+  if ($loggedin):
+    $isadmin = isset($_SESSION["admin"]);
+  endif;
   
 ?>
 <!DOCTYPE html>
@@ -57,6 +76,9 @@
           <label for="identifier">Personal Identifier: </label>
           <input type="password" name="pid" id="identifier" pattern="(\w|\d)+"
             autofocus="autofocus" />
+          
+          <input type="hidden" name="course" value="<?= $course ?>" />
+          
           <button type="submit">Login</button>
         </form>
       </p>
