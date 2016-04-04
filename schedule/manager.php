@@ -18,7 +18,19 @@
     array(PDO::ATTR_EMULATE_PREPARES => false,
           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
           
+  $query = "select title from courses";
+  $stmt = $db->prepare($query);
+  $stmt->execute();
+  $courses = $stmt->fetchAll();
+          
   if (isset($_POST['clear'])):
+    # Reset file info
+    foreach ($courses as $course):
+      $filename = 'counts/' . $course . 'tutorcount.txt';
+      unlink($filename);
+    endforeach;
+    
+    # Reset db info
     $query = "drop table courses";
     $stmt = $db->prepare($query);
     $stmt->execute();
@@ -74,9 +86,6 @@
   $curr_total = $stmt->fetchAll();
   $curr_total = $curr_total[0]['count(id)'];
 
-  # get number of tutors from text file
-  
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -107,12 +116,25 @@
       Set up a new course <a href="tutors.php">here</a>.
     </p>
     
-    <p>
-      <?php //if ($curr_total == $totaltutors)?>
-      <!-- make schedule button w associated logic, maybe conditionally
-        disabled, comment class paragraph w description/info -->
-      <?php //endif; ?>
-    </p>
+    <div id="schedules">
+      <?php if (count($courses) != 0): ?>
+        Make Schedule
+        <?php foreach ($courses as $course): ?>
+          <p>
+            <button id="<?= $course ?>" type="button"
+              <?php 
+              # get number of tutors from text file
+              $filename = 'counts/' . $course . 'tutorcount.txt';
+              $totaltutors = trim(file_get_contents($filename));
+              if ($curr_total != $totaltutors): ?>
+                disabled="disabled"
+              <?php endif;
+              ?>><?= $course ?></button>
+          </p>
+        <?php endforeach; 
+      endif; ?>
+      
+    </div>
     
     <p>
       <a href="logout.php">Logout</a>.

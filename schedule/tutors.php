@@ -50,13 +50,10 @@
         $stmt->bindParam(':hrs', $cleared_hrs, PDO::PARAM_STR);
         $stmt->execute();
       endfor;
-    
-      # put number of tutors into text file
-      
       
       header('Location: setup_course.php');
     else:
-      # format failure message
+      # failure message
       $message = "Submission Failed. Please Try Again.";
     endif;
   endif;

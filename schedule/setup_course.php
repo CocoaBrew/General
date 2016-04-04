@@ -133,6 +133,14 @@
         endif;
       endforeach;
       
+      # Put number of tutors into text file
+      $tutorcount = count($tutorinfo); // count of tutors in db
+      $filename = 'counts/' . $title . 'tutorcount.txt';
+      touch($filename);
+      chmod($filename, 0606);
+      file_put_contents($filename, $tutorcount);
+      file_put_contents($filename, "\n", FILE_APPEND); 
+      
       $message = "Setup Complete.";
       $success = true;
     else:
