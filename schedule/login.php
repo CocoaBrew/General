@@ -33,7 +33,9 @@
         $isadmin = true;
         header('Location: manager.php');
       else:
-        $query = "select name from tutors where id = :pid";
+        $query = "select t.name as name, c.course as course
+          from tutors as t inner join course_for_tutor as c 
+          where t.id = c.id and t.id = :pid";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':pid', $pid, PDO::PARAM_STR);
         $stmt->execute();
@@ -41,6 +43,7 @@
         if (count($ret_vals) == 1):
           $name = $ret_vals[0]["name"];
           $_SESSION["name"] = $name;
+          $_SESSION['course'] = $ret_vals[0]['course'];
           if (isset($_SESSION['course'])):
             header("Location: survey.php");
           else:

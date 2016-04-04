@@ -8,7 +8,8 @@ create table courses(
   wed varchar(255),
   thu varchar(255),
   fri varchar(255),
-  primary key (title)
+  listing int not null auto_increment,
+  primary key (listing)
 );
 
 create table tutors(
@@ -17,6 +18,12 @@ create table tutors(
   email varchar(255),
   education varchar(255),
   work_hrs varchar(255),
+  primary key (id)
+);
+
+create table course_for_tutor(
+  id varchar(255) not null,
+  course varchar(255),
   primary key (id)
 );
 

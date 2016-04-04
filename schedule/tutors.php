@@ -22,10 +22,13 @@
   $message = '';
   
   # verify there is at least one tutor
-  if (isset($_POST['submitinfo']) && $tutorcount != 0):
+  if (isset($_POST['submitinfo']) && $tutorcount != 0 &&
+    isset($_POST['coursename'])):
     if (isset($_POST['lname0']) && isset($_POST['idnum0']) && 
       isset($_POST['email0']) && isset($_POST['tuttype0']) && 
         isset($_POST['hrscleared0'])):
+      $coursename = trim(htmlspecialchars($_POST['coursename']));
+      $_SESSION['title'] = $coursename;
       for ($i = 0; $i < $tutorcount; $i++):
         $id_val = 'idnum' . $i;
         $fname_val = 'fname' . $i;
@@ -40,7 +43,7 @@
         $ed_level = trim(htmlspecialchars($_POST[$ed_val]));
         $hrs_val = 'hrscleared' . $i;
         $cleared_hrs = trim(htmlspecialchars($_POST[$hrs_val]));
-        $query = "insert into tutors (id, name, email, education, work_hrs) 
+        $query = "insert into tutors (id, name, email, education, work_hrs)
           values (:id, :name, :email, :edu, :hrs)";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':id', $tutor_id, PDO::PARAM_STR);
@@ -49,9 +52,16 @@
         $stmt->bindParam(':edu', $ed_level, PDO::PARAM_STR);
         $stmt->bindParam(':hrs', $cleared_hrs, PDO::PARAM_STR);
         $stmt->execute();
+        
+        $query = "insert into course_for_tutor (id, course)
+          values (:id, :course)";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':id', $tutor_id, PDO::PARAM_STR);
+        $stmt->bindParam(':course', $coursename, PDO::PARAM_STR);
+        $stmt->execute();
       endfor;
-      
-      header('Location: setup_course.php');
+            
+      header("Location: setup_course.php");
     else:
       # failure message
       $message = "Submission Failed. Please Try Again.";
@@ -91,6 +101,14 @@
     
     <section id="tutorlist">
       <form id="addtutors" action="tutors.php" method="post">
+        <?php if ($tutorcount != 0): ?>
+          <p class="singletutor">
+            <label for="coursename">Course Name: </label>
+            <input type="text" name="coursename" id="coursename" 
+              required="required" placeholder="e.g., Math200, Calc2" />
+          </p>
+        <?php endif; ?>
+        
         <?php for ($tutor = 0; $tutor < $tutorcount; $tutor++): ?>
           <div class="singletutor">
             <p>
@@ -139,7 +157,7 @@
         
         <input type="hidden" name="tutorcount" value="<?= $tutorcount ?>" />
         
-        <?php if (isset($_POST['numtutors'])): ?>
+        <?php if (isset($_POST['numtutors']) && $_POST['numtutors'] != 0): ?>
           <p>
             <input type="submit" form="addtutors" name="submitinfo" 
               id="addinfo" value="Submit Info" />
@@ -148,6 +166,5 @@
       </form>
     </section>
     
-    <script src="tutors.js"></script>
   </body>
 </html>

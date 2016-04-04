@@ -74,7 +74,6 @@
           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
   
   $coursename = $_SESSION['course'];
-  print($coursename);
 
   $query = "select sun, mon, tue, wed, thu, fri from courses 
     where title = :coursename";

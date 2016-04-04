@@ -3,6 +3,8 @@
   error_reporting(E_ALL);
   ini_set('display_errors', '1');
   
+  session_start();
+  
   require('../dblogin_sched.php');
   require('contact.php');
   
@@ -36,6 +38,16 @@
   $message = '';
   $success = false;
   
+  $db = new PDO("mysql:host=$db_hostname;dbname=schedule;charset=utf8",
+    $db_username, $db_password,
+    array(PDO::ATTR_EMULATE_PREPARES => false,
+          PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+          
+  $title = '';
+  if (isset($_SESSION['title'])):
+    $title = trim(htmlspecialchars($_SESSION['title']));
+  endif;
+  
   if (isset($_POST['coursename']) && $_POST['coursename'] != ''):
     if ((isset($_POST['sunstart']) && isset($_POST['sunend'])) ||
       (isset($_POST['monstart']) && isset($_POST['monend'])) || 
@@ -67,13 +79,6 @@
       $fr_end = trim(htmlspecialchars($_POST['friend']));
       $fri = $fr_beg . '/' . $fr_end;
     
-      $db = new PDO("mysql:host=$db_hostname;dbname=schedule;charset=utf8",
-        $db_username, $db_password,
-        array(PDO::ATTR_EMULATE_PREPARES => false,
-              PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
-            
-      $title = trim(htmlspecialchars($_POST['coursename']));
-    
       $query = "insert into courses (title, sun, mon, tue, wed, thu, fri)
         values (:title, :sun, :mon, :tue, :wed, :thu, :fri)";
       $stmt = $db->prepare($query);
@@ -87,8 +92,11 @@
       $stmt->execute();
       
       # Send emails with survey link
-      $query = "select name, email from tutors";
+      $query = "select t.name, t.email 
+        from tutors as t inner join course_for_tutor as c
+        where t.id = c.id and c.course = :title";
       $stmt = $db->prepare($query);
+      $stmt->bindParam(':title', $title, PDO::PARAM_STR);
       $stmt->execute();
       $tutorinfo = $stmt->fetchAll();
       foreach ($tutorinfo as $tutor):
@@ -107,7 +115,9 @@
               You are currently listed as a tutor for the upcoming 
               semester. <br />
               Please take a few minutes and fill out this survey regarding
-              your schedule and times you are available for tutoring.
+              your schedule and times you are available for tutoring. <br />
+              From personal experience, the survey works best when completed
+              using Google Chrome.
             </p>
             <br />
             <p>
@@ -167,13 +177,12 @@
     
     <?php if (!$success): ?>
     <section id="courseinfo">
-      <form id="makecourse" action="setup_course.php" method="post">        
-        <p>
-          <label for="coursename">Course Name: </label>
-          <input type="text" name="coursename" id="coursename" 
-            required="required" placeholder="e.g., Math200, Calc2" />
-        </p>
-        
+      <form id="makecourse" action="setup_course.php" method="post">
+        <?php if ($title != ''): ?>
+          <h2>Course: <?= $title ?></h2>
+        <?php else: ?>
+          <h2>Course: (None)</h2>
+        <?php endif; ?>
         <p>
           <label>Times for Tutoring: </label>
         </p>
@@ -226,6 +235,7 @@
             <label for="f2">To: </label>
             <input type="time" name="friend" id="f2" placeholder="1800"/>
           </p>
+        </div>
           
         <p>
           <input type="checkbox" name="verify" value="true" id="verify"
@@ -234,6 +244,8 @@
             The above tutoring times are correct.
           </label>
         </p>
+        
+        <input type="hidden" name="coursename" value="<?= $title ?>" />
         
         <button type="submit" id="sendsurvey">
           Send Survey

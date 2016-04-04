@@ -4,7 +4,6 @@
   ini_set('display_errors', '1');
   
   session_start();
-  //print_r($_SESSION);
   
   require_once('../dblogin_sched.php');
   
@@ -26,7 +25,7 @@
   if (isset($_POST['clear'])):
     # Reset file info
     foreach ($courses as $course):
-      $filename = 'counts/' . $course . 'tutorcount.txt';
+      $filename = 'counts/' . $course['title'] . 'tutorcount.txt';
       unlink($filename);
     endforeach;
     
@@ -40,6 +39,9 @@
     $query = "drop table available";
     $stmt = $db->prepare($query);
     $stmt->execute();
+    $query = "drop table course_for_tutor";
+    $stmt = $db->prepare($query);
+    $stmt->execute();
     $query = "create table courses(
       title varchar(255) not null,
       sun varchar(255),
@@ -48,7 +50,8 @@
       wed varchar(255),
       thu varchar(255),
       fri varchar(255),
-      primary key (title));";
+      listing int not null auto_increment,
+      primary key (listing));";
     $stmt = $db->prepare($query);
     $stmt->execute();
     $query = "create table tutors(
@@ -77,14 +80,26 @@
       primary key (id));";
     $stmt = $db->prepare($query);
     $stmt->execute();
+    $query = "create table course_for_tutor(
+      id varchar(255) not null,
+      course varchar(255),
+      primary key (id));";
+    $stmt = $db->prepare($query);
+    $stmt->execute();
   endif;
   
   # count number of tutors who completed surveys
-  $query = "select count(id) from tutors";
+  $query = "select count(id) from available";
   $stmt = $db->prepare($query);
   $stmt->execute();
   $curr_total = $stmt->fetchAll();
   $curr_total = $curr_total[0]['count(id)'];
+  
+  # Recheck number of courses, in case reset occurred
+  $query = "select title from courses";
+  $stmt = $db->prepare($query);
+  $stmt->execute();
+  $coursesAfter = $stmt->fetchAll();
 
 ?>
 <!DOCTYPE html>
@@ -100,11 +115,45 @@
     <h1>Tutor Manager</h1>
     
     <p>
-      This page is used to manage tutoring lists. 
+      <a href="logout.php">Logout</a>.
     </p>
     
     <p>
-      Clear current course and tutor information from record? 
+      This page is used to manage tutoring lists. 
+    </p>
+    
+    <h2>New Course</h2>
+    <p>
+      Set up a new course <a href="tutors.php">here</a>.
+    </p>
+    
+    <div id="schedules">
+      <?php if (count($coursesAfter) != 0): ?>
+        <h2>Make Schedule</h2>
+        <p class="comment">
+          When all tutors for a particular course have completed their surveys,
+          the button for that course can be clicked to create the associated
+          schedule.
+        </p>
+        <?php foreach ($coursesAfter as $course): ?>
+          <p>
+            <button id="<?= $course['title'] ?>" type="button"
+              <?php 
+              # get number of tutors from text file
+              $filename = 'counts/' . $course['title'] . 'tutorcount.txt';
+              $totaltutors = trim(file_get_contents($filename));
+              if ($curr_total != $totaltutors): ?>
+                disabled="disabled"
+              <?php endif;
+              ?>><?= $course['title'] ?></button>
+          </p>
+        <?php endforeach; 
+      endif; ?>
+    </div>
+    
+    <h2>Reset</h2>
+    <p>
+      Clear all current course and tutor information? 
       <form id="dataclear" action="manager.php" method="post">
         <input type="submit" form="dataclear" name="clear" id="clear"
           value="Clear Data" /> 
@@ -112,32 +161,5 @@
       </form>
     </p>
     
-    <p>
-      Set up a new course <a href="tutors.php">here</a>.
-    </p>
-    
-    <div id="schedules">
-      <?php if (count($courses) != 0): ?>
-        Make Schedule
-        <?php foreach ($courses as $course): ?>
-          <p>
-            <button id="<?= $course ?>" type="button"
-              <?php 
-              # get number of tutors from text file
-              $filename = 'counts/' . $course . 'tutorcount.txt';
-              $totaltutors = trim(file_get_contents($filename));
-              if ($curr_total != $totaltutors): ?>
-                disabled="disabled"
-              <?php endif;
-              ?>><?= $course ?></button>
-          </p>
-        <?php endforeach; 
-      endif; ?>
-      
-    </div>
-    
-    <p>
-      <a href="logout.php">Logout</a>.
-    </p>
   </body>
 </html>
