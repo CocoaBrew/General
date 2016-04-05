@@ -77,53 +77,55 @@
         # has a '-1'. If he prefers that half hour, the time 
         # has a '1'. For all other times, the time is marked '0'.
         $csvRow = array();
-    
+        
+        $csvRow[0] = $time;
+            
         if (in_array($time, $sbusy)):
-          $csvRow[0] = -1;
-        elseif (in_array($time, $spref)):
-          $csvRow[0] = 1;
-        else:
-          $csvRow[0] = 0;
-        endif;
-    
-        if (in_array($time, $mbusy)):
           $csvRow[1] = -1;
-        elseif (in_array($time, $mpref)):
+        elseif (in_array($time, $spref)):
           $csvRow[1] = 1;
         else:
           $csvRow[1] = 0;
         endif;
     
-        if (in_array($time, $tbusy)):
+        if (in_array($time, $mbusy)):
           $csvRow[2] = -1;
-        elseif (in_array($time, $tpref)):
+        elseif (in_array($time, $mpref)):
           $csvRow[2] = 1;
         else:
           $csvRow[2] = 0;
         endif;
     
-        if (in_array($time, $wbusy)):
+        if (in_array($time, $tbusy)):
           $csvRow[3] = -1;
-        elseif (in_array($time, $wpref)):
+        elseif (in_array($time, $tpref)):
           $csvRow[3] = 1;
         else:
           $csvRow[3] = 0;
         endif;
     
-        if (in_array($time, $rbusy)):
+        if (in_array($time, $wbusy)):
           $csvRow[4] = -1;
-        elseif (in_array($time, $rpref)):
+        elseif (in_array($time, $wpref)):
           $csvRow[4] = 1;
         else:
           $csvRow[4] = 0;
         endif;
     
-        if (in_array($time, $fbusy)):
+        if (in_array($time, $rbusy)):
           $csvRow[5] = -1;
-        elseif (in_array($time, $fpref)):
+        elseif (in_array($time, $rpref)):
           $csvRow[5] = 1;
         else:
           $csvRow[5] = 0;
+        endif;
+    
+        if (in_array($time, $fbusy)):
+          $csvRow[6] = -1;
+        elseif (in_array($time, $fpref)):
+          $csvRow[6] = 1;
+        else:
+          $csvRow[6] = 0;
         endif;
     
         # print availability at current time

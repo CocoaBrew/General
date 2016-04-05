@@ -36,7 +36,7 @@
       $hrs_for_day = array();
       $k = 0;
       $i = $time[0];
-      while (substr($i, 0, 2) <= substr($time[1], 0, 2))
+      while (substr($i, 0, 2) < substr($time[1], 0, 2))
       {
         $hrs_for_day[$k] = $i;
         

@@ -25,9 +25,27 @@
   if (isset($_POST['clear'])):
     # Reset file info
     foreach ($courses as $course):
-      $filename = 'counts/' . $course['title'] . 'tutorcount.txt';
-      unlink($filename);
+      $fileDir = 'CSVs/' . $course['title'];
+      $query = "select t.name from tutors as t 
+        inner join course_for_tutor as c
+        where t.id = c.id and c.course = :course";
+      $stmt = $db->prepare($query);
+      $stmt->bindParam(':course', $course['title'], PDO::PARAM_STR);
+      $stmt->execute();
+      $names = $stmt->fetchAll();
+      foreach ($names as $name):
+        $nameList = explode('+', $name[0]);
+        $fullname = $nameList[0] . $nameList[1];
+        $filename = $fileDir . '/' . $fullname . '.csv';
+        unlink($filename);
+      endforeach;
+      rmdir($filedir);
+      $countFileDir = 'counts/' . $course['title']
+      $countFilePath = $countFileDir . '/' . 'tutorcount.txt';
+      unlink($countFilePath);
+      rmdir($countFileDir);
     endforeach;
+    
     
     # Reset db info
     $query = "drop table courses";
