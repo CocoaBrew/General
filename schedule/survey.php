@@ -50,7 +50,7 @@
         # set new hour value
         $newHr = substr_replace($i, substr($i, 0, 2) + 1, 0, 2);
         if (strlen($newHr) < 5):
-          str_pad($newHr, 5, '0', STR_PAD_LEFT);
+          $newHr = str_pad($newHr, 5, '0', STR_PAD_LEFT);
         endif;
         $i = $newHr;
         

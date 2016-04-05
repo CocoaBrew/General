@@ -137,7 +137,7 @@
         </p>
         <?php foreach ($coursesAfter as $course): ?>
           <p>
-            <button id="<?= $course['title'] ?>" type="button"
+            <button class="creator" id="<?= $course['title'] ?>" type="button"
               <?php 
               # get number of tutors from text file
               $filename = 'counts/' . $course['title'] . 'tutorcount.txt';
@@ -151,6 +151,10 @@
       endif; ?>
     </div>
     
+    <!-- 
+      hidden Schedules section with existing schedules when available
+    -->
+    
     <h2>Reset</h2>
     <p>
       Clear all current course and tutor information? 
@@ -161,5 +165,6 @@
       </form>
     </p>
     
+    <script src="manager.js"></script>
   </body>
 </html>
