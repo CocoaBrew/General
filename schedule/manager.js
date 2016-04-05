@@ -46,6 +46,13 @@ function toCSV(course)
 
 function writeSchedule(course) 
 {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "schedule.py", true); //use GET instead???
+  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  var param = "coursename=" + course;
+  xhr.send(param);
+  
+  
   /*if (!fileExists)
   {
     scheduleMakingCode
@@ -54,5 +61,16 @@ function writeSchedule(course)
   {
     redirectToExistingSchedule
   }*/
+  
+  /* for each tutor
+  {
+    tutorThread = new Thread(tutorName, hours, edLevel = PRIORITY)
+    tutorThread.run() -> schedule()
+  }*/
+  
+  /* finalSched[12hrs][6days] each with '' 
+  sendBackSchedArray (or sendBackSchedPage)
+  finalSchedValuesOutputToFormattedHtmlDoc() //htmlDoc w draggable entries?
+  */
 }
 
