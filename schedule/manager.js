@@ -47,10 +47,9 @@ function toCSV(course)
 function writeSchedule(course) 
 {
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", "schedule.py", true); //use GET instead???
+  xhr.open("GET", "schedule.py?course=" + course, true);
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  var param = "coursename=" + course;
-  xhr.send(param);
+  xhr.send();
   
   
   /*if (!fileExists)

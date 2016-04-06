@@ -1,30 +1,16 @@
+#!/usr/bin/python
+
 # Dan Coleman
 # Writes schedule from csv data
 
+import sys
 import csv
-
-def htmlTop():
-    top = """<!DOCTYPE html>
-              <html>
-                <head>
-                  <meta charset="utf-8"/>
-                  <meta name="author" content="Dan Coleman"/>
-                  <link rel="stylesheet" href="tutor.css" />
-                  <title>Schedule</title>
-                </head>
-                <body>
-                  """
-    return top
-
-def htmlEnd():
-    end = """   </body>
-              </html>"""
-    return end
 
 if __name__ == "__main__":
     # open tutordata files
     
     print(htmlTop)
+    print(htmlContent)
     print(htmlEnd)
     
 """
@@ -35,7 +21,6 @@ class Tutor:
     def __init__ (self, csvFilename):
         self.name = self.parseName(csvFilename)
         self.timeMatrix = self.extractTimes(csvFilename)
-    
     
     def parseName(self, filename):
         nameParts = filename.split('.')
@@ -72,5 +57,12 @@ class Tutor:
         elif (day == 'F'):
             code = 5
         return code
+    
+
+def main():
+    coursename = ''
+    if (len(sys.argv) == 2):
+        coursename = sys.argv[1]
+    
     
     

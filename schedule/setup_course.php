@@ -35,6 +35,70 @@
     endif;
   }  
   
+  # Functions to store the required hrs in a file
+  function getDayHrs($week_hours)
+  {
+    $hour_data = array();
+    foreach ($week_hours as $day):
+      $sunhrs = explode('/', $day[0]);
+      $monhrs = explode('/', $day[1]);
+      $tuehrs = explode('/', $day[2]);
+      $wedhrs = explode('/', $day[3]);
+      $thuhrs = explode('/', $day[4]);
+      $frihrs = explode('/', $day[5]);
+      $hour_data = array($sunhrs, $monhrs, $tuehrs, $wedhrs, $thuhrs, $frihrs);
+    endforeach;
+    
+    return $hour_data;
+  }
+  
+  function makeHrsList($hour_info)
+  {
+    $hour_list = array();
+    $m = 0;
+    foreach ($hour_info as $time):
+      $hrs_for_day = array();
+      $k = 0;
+      $i = $time[0];
+      while (substr($i, 0, 2) < substr($time[1], 0, 2))
+      {
+        $hrs_for_day[$k] = $i;
+        
+        # add half-hour increments
+        if (substr($i, 0, 2) < substr($time[1], 0, 2)):
+          $k++;
+          $iHalfHr = substr_replace($i, "30", 3, 2);
+          $hrs_for_day[$k] = $iHalfHr;
+        endif;
+        
+        # set new hour value
+        $newHr = substr_replace($i, substr($i, 0, 2) + 1, 0, 2);
+        if (strlen($newHr) < 5):
+          $newHr = str_pad($newHr, 5, '0', STR_PAD_LEFT);
+        endif;
+        $i = $newHr;
+        
+        $k++;
+      }
+      $hour_list[$m] = $hrs_for_day;
+      $m++;
+    endforeach;
+    
+    return $hour_list;
+  }
+  
+  function storeHrs($week_hours, $filename)
+  { 
+    touch($filename);
+    chmod($filename, 0606);
+    $outFile = fopen($filename, 'w');
+    $hrs = makeHrsList(getDayHrs($week_hours));
+    foreach ($hrs as $hr):
+      fputcsv($outFile, $hr);
+    endforeach;
+    fclose($outFile);
+  }
+  
   $message = '';
   $success = false;
   
@@ -90,6 +154,10 @@
       $stmt->bindParam(':thu', $thu, PDO::PARAM_STR);
       $stmt->bindParam(':fri', $fri, PDO::PARAM_STR);
       $stmt->execute();
+      
+      $hours = array($sun, $mon, $tue, $wed, $thu, $fri);
+      $filename = 'CSVs/' . $title . '/' . $title . '.csv';
+      storeHrs($hours, $filename);
       
       # Send emails with survey link
       $query = "select t.name, t.email 
