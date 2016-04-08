@@ -39,16 +39,38 @@
   function getDayHrs($week_hours)
   {
     $hour_data = array();
-    foreach ($week_hours as $day):
-      $sunhrs = explode('/', $day[0]);
-      $monhrs = explode('/', $day[1]);
-      $tuehrs = explode('/', $day[2]);
-      $wedhrs = explode('/', $day[3]);
-      $thuhrs = explode('/', $day[4]);
-      $frihrs = explode('/', $day[5]);
-      $hour_data = array($sunhrs, $monhrs, $tuehrs, $wedhrs, $thuhrs, $frihrs);
-    endforeach;
+    $sunhrs = array();
+    if ($week_hours[0] != '/'):
+      $sunhrs = explode('/', $week_hours[0]);
+    endif;
     
+    $monhrs = array();
+    if ($week_hours[1] != '/'):
+      $monhrs = explode('/', $week_hours[1]);
+    endif;
+    
+    $tuehrs = array();
+    if ($week_hours[2] != '/'):
+      $tuehrs = explode('/', $week_hours[2]);
+    endif;
+    
+    $wedhrs = array();
+    if ($week_hours[3] != '/'):
+      $wedhrs = explode('/', $week_hours[3]);
+    endif;
+    
+    $thuhrs = array();
+    if ($week_hours[4] != '/'):
+      $thuhrs = explode('/', $week_hours[4]);
+    endif;
+    
+    $frihrs = array();
+    if ($week_hours[5] != '/'):
+      $frihrs = explode('/', $week_hours[5]);
+    endif;
+    
+    $hour_data = array($sunhrs, $monhrs, $tuehrs, $wedhrs, $thuhrs, $frihrs);
+  
     return $hour_data;
   }
   
@@ -59,27 +81,29 @@
     foreach ($hour_info as $time):
       $hrs_for_day = array();
       $k = 0;
-      $i = $time[0];
-      while (substr($i, 0, 2) < substr($time[1], 0, 2))
-      {
-        $hrs_for_day[$k] = $i;
+      if (!empty($time)):
+        $i = $time[0];
+        while (substr($i, 0, 2) < substr($time[1], 0, 2))
+        {
+          $hrs_for_day[$k] = $i;
         
-        # add half-hour increments
-        if (substr($i, 0, 2) < substr($time[1], 0, 2)):
+          # add half-hour increments
+          if (substr($i, 0, 2) < substr($time[1], 0, 2)):
+            $k++;
+            $iHalfHr = substr_replace($i, "30", 3, 2);
+            $hrs_for_day[$k] = $iHalfHr;
+          endif;
+        
+          # set new hour value
+          $newHr = substr_replace($i, substr($i, 0, 2) + 1, 0, 2);
+          if (strlen($newHr) < 5):
+            $newHr = str_pad($newHr, 5, '0', STR_PAD_LEFT);
+          endif;
+          $i = $newHr;
+        
           $k++;
-          $iHalfHr = substr_replace($i, "30", 3, 2);
-          $hrs_for_day[$k] = $iHalfHr;
-        endif;
-        
-        # set new hour value
-        $newHr = substr_replace($i, substr($i, 0, 2) + 1, 0, 2);
-        if (strlen($newHr) < 5):
-          $newHr = str_pad($newHr, 5, '0', STR_PAD_LEFT);
-        endif;
-        $i = $newHr;
-        
-        $k++;
-      }
+        }
+      endif;
       $hour_list[$m] = $hrs_for_day;
       $m++;
     endforeach;
@@ -155,12 +179,15 @@
       $stmt->bindParam(':fri', $fri, PDO::PARAM_STR);
       $stmt->execute();
       
+      $filename = 'CSVs/' . $title; 
+      mkdir($filename);
+      chmod($filename, 0733);
+      $filename = $filename . '/' . $title . '.csv';
       $hours = array($sun, $mon, $tue, $wed, $thu, $fri);
-      $filename = 'CSVs/' . $title . '/' . $title . '.csv';
       storeHrs($hours, $filename);
       
       # Send emails with survey link
-      $query = "select t.name, t.email 
+      $query = "select t.name, t.email, t.education, t.work_hrs 
         from tutors as t inner join course_for_tutor as c
         where t.id = c.id and c.course = :title";
       $stmt = $db->prepare($query);
@@ -168,9 +195,21 @@
       $stmt->execute();
       $tutorinfo = $stmt->fetchAll();
       foreach ($tutorinfo as $tutor):
+        # Add tutor info to course_tutors csv
+        $filename = 'CSVs/' . $title . '/' . $title . 'tutors.csv';
+        touch($filename);
+        chmod($filename, 0606);
+        $outFile = fopen($filename, 'w');
+        $namelist = explode('+', $tutor[0]);
+        $ed = $tutor[2];
+        $hrs = $tutor[3];
+        $entry = array($namelist[0] . $namelist[1] . $hrs . $ed . '.csv');
+        fputcsv($outFile, $entry);
+        fclose($outFile);
+        
+        # Email
         $emailadd = $tutor[1];
         $survey_addr = $survey_url + "?c=$title";
-        $namelist = explode('+', $tutor[0]);
         $subject = "Availability Survey";
         $content = "
           <html>

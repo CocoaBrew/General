@@ -28,10 +28,11 @@
   $destDir = "CSVs/" . $course;
   if (!file_exists($destDir)):
     mkdir($destDir);
-    chmod($destDir, 0606);
+    chmod($destDir, 0733);
 
     # Get names of tutors for a course
-    $query = "select t.name from tutors as t inner join course_for_tutor as c
+    $query = "select t.name, t.education, t.work_hrs 
+      from tutors as t inner join course_for_tutor as c
       where t.id = c.id and c.course = :course";
     $stmt = $db->prepare($query);
     $stmt->bindParam(':course', $course, PDO::PARAM_STR);
@@ -42,7 +43,9 @@
     foreach($names as $name):
       $nameList = explode('+', $name[0]);
       $fullname = $nameList[0] . $nameList[1];
-      $destFile = $destDir . '/' . $fullname . '.csv';
+      $ed = $name[1];
+      $hrs = $name[2];
+      $destFile = $destDir . '/' . $fullname . $hrs . $ed . '.csv';
       touch($destFile);
       chmod($destFile, 0606);
   

@@ -26,7 +26,7 @@
     # Reset file info
     foreach ($courses as $course):
       $fileDir = 'CSVs/' . $course['title'];
-      $query = "select t.name from tutors as t 
+      $query = "select t.name, t.education, t.work_hrs from tutors as t 
         inner join course_for_tutor as c
         where t.id = c.id and c.course = :course";
       $stmt = $db->prepare($query);
@@ -36,16 +36,17 @@
       foreach ($names as $name):
         $nameList = explode('+', $name[0]);
         $fullname = $nameList[0] . $nameList[1];
-        $filename = $fileDir . '/' . $fullname . '.csv';
-        unlink($filename);
+        $filename = $fileDir . '/' . $fullname . $name[2] . $name[1] . '.csv';
+        if (file_exists($filename)):
+          unlink($filename);
+        endif;
       endforeach;
-      rmdir($filedir);
-      $countFileDir = 'counts/' . $course['title']
-      $countFilePath = $countFileDir . '/' . 'tutorcount.txt';
+      unlink($fileDir . '/' . $course['title'] . '.csv');
+      unlink($fileDir . '/' . $course['title'] . 'tutors.csv');
+      rmdir($fileDir);
+      $countFilePath = 'counts/' . $course['title'] . 'tutorcount.txt';
       unlink($countFilePath);
-      rmdir($countFileDir);
     endforeach;
-    
     
     # Reset db info
     $query = "drop table courses";
@@ -172,6 +173,7 @@
     <!-- 
       hidden Schedules section with existing schedules when available
     -->
+    <p id="response"></p>
     
     <h2>Reset</h2>
     <p>

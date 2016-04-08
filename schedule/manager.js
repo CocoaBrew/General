@@ -10,21 +10,26 @@ function gebi(item)
 window.onload = function() 
 {
   var createButtons = document.getElementsByClassName("creator");
+  var schedIds = [];
   for (creator in createButtons)
   {
+    document.getElementById('response').innerHTML = "mozzstix";
     var courseName = creator.id.trim();
     creator.onclick = makeSchedule(courseName);
   }
+  document.querySelectorAll(schedIds);
+  document.getElementById('response').innerHTML = "brownies";
 }
 
 function makeSchedule(course) 
 {
   gebi(course).disabled = true;
+  document.getElementById('response').innerHTML = "cookies";
   if (toCSV(course))
   {
+    document.getElementById('response').innerHTML = "more and more brownies";
     writeSchedule(course);
   }
-  gebi(course).disabled = false;
 }
 
 function toCSV(course) 
@@ -35,6 +40,7 @@ function toCSV(course)
   var param = "coursename=" + course;
   xhr.send(param);
   var response = xhr.responseText.trim();
+  document.getElementById('response').innerHTML = "888GETPIES";
   var success = false;
   if (response == "created")
   {
@@ -46,10 +52,14 @@ function toCSV(course)
 
 function writeSchedule(course) 
 {
+  document.getElementById('response').innerHTML = "cocoaBerryLimefrosting";
   var xhr = new XMLHttpRequest();
-  xhr.open("GET", "schedule.py?course=" + course, true);
+  xhr.open("POST", "schedule.py", true);
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  xhr.send();
+  var param = "course=" + course;
+  xhr.send(param);
+  
+  gebi('response').innerHTML = xhr.responseText;
   
   
   /*if (!fileExists)
