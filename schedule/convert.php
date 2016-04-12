@@ -49,7 +49,7 @@
     $hrs = $name[2];
     $destFile = $destDir . '/' . $fullname . $hrs . $ed . '.csv';
     touch($destFile);
-    chmod($destFile, 0606);
+    chmod($destFile, 0646);
 
     $query = "select sbusy, mbusy, tbusy, wbusy, rbusy, fbusy, 
       spref, mpref, tpref, wpref, rpref, fpref 

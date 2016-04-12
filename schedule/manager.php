@@ -173,6 +173,8 @@
     <!-- 
       hidden Schedules section with existing schedules when available
     -->
+    <section id="schedLinks"></section>
+    
     <p id="response"></p>
     
     <h2>Reset</h2>

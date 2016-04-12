@@ -114,7 +114,7 @@
   function storeHrs($week_hours, $filename)
   { 
     touch($filename);
-    chmod($filename, 0606);
+    chmod($filename, 0646);
     $outFile = fopen($filename, 'w');
     $hrs = makeHrsList(getDayHrs($week_hours));
     foreach ($hrs as $hr):
@@ -198,7 +198,7 @@
         # Add tutor info to course_tutors csv
         $filename = 'CSVs/' . $title . '/' . $title . 'tutors.csv';
         touch($filename);
-        chmod($filename, 0606);
+        chmod($filename, 0646);
         $outFile = fopen($filename, 'w');
         $namelist = explode('+', $tutor[0]);
         $ed = $tutor[2];
@@ -223,8 +223,9 @@
               semester. <br />
               Please take a few minutes and fill out this survey regarding
               your schedule and times you are available for tutoring. <br />
-              From personal experience, the survey works best when completed
-              using Google Chrome.
+              You must be on the campus network to access the survey. <br />
+              Also, from personal experience, the survey works best when
+              completed using Google Chrome.
             </p>
             <br />
             <p>

@@ -56,18 +56,44 @@ function toCSV(course)
 
 function writeSchedule(course) 
 {
-  document.getElementById('response').innerHTML = "cocoaBerryLimefrosting";
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", "schedule.py", false);
+  xhr.open("POST", "sched_writer.php", false);
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   var param = "course=" + course;
   xhr.send(param);
+  var response = xhr.responseText;
+  gebi('response').innerHTML = response;
   
-  gebi('response').innerHTML = xhr.responseText;
-  
+  if (response == "written")
+  {
+    var schedButton = document.createElement("input");
+    var btnVal = document.createAttribute("value");
+    btnVal.value = course;
+    schedButton.attributes.setNamedItem(btnVal);
+    
+    var attr = document.createAttribute("type");
+    attr.value = "button";
+    schedButton.attributes.setNamedItem(attr);
+    
+    schedButton.addEventListener("onclick", function()
+    {
+      openSched(this);
+    });
+    
+    var linkParent = gebi('schedLinks');
+    linkParent.appendChild(schedButton);
+  }
   
   /*
-  finalSchedValuesOutputToFormattedHtmlDoc() //htmlDoc w draggable entries?
+    //htmlDoc w draggable entries?.....scriptaculous? prototype?....
+    save on change?????
   */
+}
+
+function openSched(btn)
+{
+  var course = btn.value.trim();
+  var href = "schedules/" + course + ".html";
+  window.open(href, "_blank");
 }
 

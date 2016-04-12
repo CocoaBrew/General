@@ -6,13 +6,13 @@
 import sys
 import csv
 import random
-from cgi import FieldStorage
 
 """ Throughout, hours refer to shifts, not full sixty-minute periods. """
 
 class Tutor:
     ### Constructor for Tutor ###
-    def __init__ (self, csvFilename):
+    def __init__ (self, csvFilename, course):
+        self.course = course
         self.name = self.parseName(csvFilename)
         self.timeMatrix = self.extractTimes(csvFilename)
         self.assigned = []
@@ -28,7 +28,7 @@ class Tutor:
             if not i.isdigit():
                 nameList.append(i)
         name = ''.join(nameList)
-        return nane
+        return name
         
     # Parse education level from filename
     def parseEdLevel(self, filename):
@@ -49,7 +49,8 @@ class Tutor:
     # Takes time values from csv file
     def extractTimes(self, filename):
         times = {}
-        with open(filename, 'rb') as csvTimes:
+        filepath = "CSVs/" + self.course + "/" + filename
+        with open(filepath, 'rb') as csvTimes:
             readTime = csv.reader(csvTimes)
             for row in readTime:
                 times[row[0]] = list(row[1:])
@@ -156,8 +157,8 @@ class Schedule:
         with open (courseFile, 'rb') as courseInfo:
             infoRead = csv.reader(courseInfo)
             for info in infoRead:
-                tList.append(Tutor(info))
-        courseFile.close()
+                tList.append(Tutor(info[0], self.course))
+        courseInfo.close()
         return tList
         
     # Get the desired hours from csv file
@@ -186,7 +187,7 @@ class Schedule:
                     hr = day + info[i]
                     hList.append(hr)
                 dayCount += 1
-        courseFile.close()
+        hoursInfo.close()
         return hList
         
 
@@ -239,43 +240,75 @@ class Schedule:
     
     # Writes created schedule to file
     def formatOutput(self):
+        shrs = []
+        mhrs = []
+        thrs = []
+        whrs = []
+        rhrs = []
+        fhrs = []
         for hr in self.reqHrs:
-            print(hr[0] + " -> " + hr[1]) 
+            if (hr[0][0] == 's'):
+                shrs.append(hr[0])
+            elif (hr[0][0] == 'm'):
+                mhrs.append(hr[0])
+            elif (hr[0][0] == 't'):
+                thrs.append(hr[0])
+            elif (hr[0][0] == 'w'):
+                whrs.append(hr[0])
+            elif (hr[0][0] == 'r'):
+                rhrs.append(hr[0])
+            elif (hr[0][0] == 'f'):
+                fhrs.append(hr[0])
+        filename = "schedules/" + self.course + ".html"
+        fout = open(filename, 'w')
+        htmlOut = '''
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8"/>
+            <meta name="author" content="Dan Coleman"/>
+            <link rel="stylesheet" href="tutor.css" />
+            <title>Course Schedule</title>
+          </head>
+
+          <body>
+            <h1>Course Schedule</h1>
+    
+            <h2>%s</h2>''' % (self.course)
+        htmlOut = htmlOut + '''
+            
+            <table class="sched">
+              <tr>
+                '''
+        for hr in shrs:
+            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[1]))
+        for hr in mhrs:
+            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[1]))
+        for hr in thrs:
+            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[1]))
+        for hr in whrs:
+            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[1]))
+        for hr in rhrs:
+            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[1]))
+        for hr in fhrs:
+            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t" % (hr[0], hr[1]))
+        htmlOut = htmlOut + '''
+              </tr>
+            </table>
+          </body>
+        </html>
+            '''
+        fout.write(htmlOut)
+        fout.close() 
         
             
 def main():
-    """coursename = ''
-    if (len(sys.argv) == 2):     # retrieve
-        coursename = sys.argv[1] # name"""
-    """postVar = FieldStorage()
-    print(postVar)
-    coursename = str(postVar['course'].value)"""
-    coursename = "HowardMath"
+    coursename = ''
+    if (len(sys.argv) > 1):
+        coursename = sys.argv[1].strip()
     sched = Schedule(coursename)
     sched.makeSchedule()
-    
-    
-def htmlTop():
-    print ("""
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8"/>
-        <meta name="author" content="Dan Coleman"/>
-        <link rel="stylesheet" href="tutor.css" />
-        <title>Tutor Manager</title>
-      </head>
+    print ("successful")
 
-      <body>
-        <h1>Course Schedule</h1>
-    
-    """)
-    
-def htmlEnd():
-    print ("""
-      </body>
-    </html>
-    """)
-    
     
 main()
