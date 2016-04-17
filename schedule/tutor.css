@@ -18,6 +18,21 @@ select
   vertical-align: middle;
 }
 
+table
+{
+  text-align: center;
+}
+
+td
+{
+  border: 2pt;
+  border-style: Solid;
+  border-color: DarkCyan;
+  padding: .2cm;
+  padding-left: .3cm;
+  padding-right: .3cm;
+}
+
 #times
 {
   margin-left: 1cm;
@@ -53,5 +68,7 @@ select
 
 .sched
 {
-  border: 1pt;
+  border: 3pt;
+  border-style: solid;
+  border-color: Black;
 }

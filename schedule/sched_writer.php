@@ -18,7 +18,7 @@ $retVal = "failed";
 
 $filename = "schedules/" . $course . ".html";
 touch($filename);
-chmod($filename, 0606);
+chmod($filename, 0626);
 
 if (exec("python schedule.py $course") == "successful"):
   $retVal = "written";

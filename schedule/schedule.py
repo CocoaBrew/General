@@ -83,31 +83,25 @@ class Tutor:
         
     # Attempts to add a given hour
     # to the schedule of this tutor
-    def assign(self, hr, blockList):
+    def assign(self, hr, blockList, reqList):
         newBlocks = []
-        if len(self.assigned) != self.shiftsCleared:
-            day = self.convertCol(hr)
-            time = hr[1:]
-            availCode = self.status(time, day)
+        if len(self.assigned) < self.shiftsCleared:
+            availCode = int(self.status(hr[1:], hr[0]))
             if (availCode == 1) or (availCode == 0): ##entire sect makeAssign??
                 nt = self.nextTime(hr)
                 pt = self.prevTime(hr)
-                if (nt not in blockList) and (nt != ''):
+                if (nt not in blockList) and (nt in reqList) and (nt != ''):
                     self.assigned.append(nt)
                     newBlocks.append(nt)
                     self.assigned.append(hr)
                     newBlocks.append(hr)
-                elif (pt not in blockList) and (pt != ''):
+                elif (pt not in blockList) and (pt in reqList) and (pt != ''):
                     self.assigned.append(pt)
                     newBlocks.append(pt)
                     self.assigned.append(hr)
                     newBlocks.append(hr)
+        print ("mark assign")  #####
         return newBlocks
-
-    # Gets indexable value for the day
-    def convertCol(self, hr):
-        day = hr[0]
-        return self.convertDay(day)
         
     # Gets time for immediately preceding hr
     def nextTime(self, hr):
@@ -193,18 +187,18 @@ class Schedule:
 
     # Create the tutoring schedule
     def makeSchedule(self):
-        while not self.schedDone(.9):
-            self.blockHrs = []
+        while not self.schedDone(.3):
+            self.blockHrs = []  # hrs that are already fully assigned
             for hr in self.reqHrs:
                 if (self.blockHrs.count(hr) <= 2):  ##format reqHrs -> s09:30
                     for tutor in self.tutors:
                         if (self.blockHrs.count(hr) <= 2):
                             self.blockHrs.extend(tutor.assign(hr, 
-                                self.blockHrs))
+                                self.blockHrs, self.reqHrs))
             success = True
-            for t in self.tutors:
+            '''for t in self.tutors:
                 if t.shiftsCleared != len(t.assigned):
-                    success = False
+                    success = False'''
             if not success:
                 self.blockHrs = []
                 for t in self.tutors:
@@ -212,15 +206,22 @@ class Schedule:
                 # mix for improved result next time
                 random.shuffle(self.reqHrs)
                 random.shuffle(self.tutors)
+                print ("mark fail")  #######
                     
         for t in self.tutors:
             for hr in t.assigned:
-                schedHr = self.reqHrs.index(hr)
-                if (isinstance(self.reqHrs[schedHr], str) or 
-                    isinstance(self.reqHrs[schedHr], unicode)):
-                    self.reqHrs[schedHr] = list(self.reqHrs[schedHr],[])
-                self.reqHrs[schedHr][1].append(t.name)
+                schedLoc = -1 #
+                for entry in self.reqHrs: #
+                    if (entry[0] == hr): #
+                        schedLoc = self.reqHrs.index(entry) #
+                    #schedLoc = self.reqHrs.index(hr)
+                if (isinstance(self.reqHrs[schedLoc], str) or 
+                    isinstance(self.reqHrs[schedLoc], unicode) and
+                    schedLoc >= 0):
+                    self.reqHrs[schedLoc] = [self.reqHrs[schedLoc],[]]
+                self.reqHrs[schedLoc][1].append(t.name)
                 
+        print (self.reqHrs)
         self.formatOutput()
     
     # Verify whether schedule meets margin of error
@@ -236,10 +237,11 @@ class Schedule:
         fullRatio =  1 - (float(len(unfilled)) / len(self.reqHrs))
         if (fullRatio < alpha):
             done = False
+        print ("mark done check")  ######
         return done
     
     # Writes created schedule to file
-    def formatOutput(self):
+    def formatOutput(self):  ######
         shrs = []
         mhrs = []
         thrs = []
@@ -259,6 +261,12 @@ class Schedule:
                 rhrs.append(hr[0])
             elif (hr[0][0] == 'f'):
                 fhrs.append(hr[0])
+        print (shrs)
+        print (mhrs)
+        print (thrs)
+        print (whrs)
+        print (rhrs)
+        print (fhrs)
         filename = "schedules/" + self.course + ".html"
         fout = open(filename, 'w')
         htmlOut = '''
@@ -267,7 +275,7 @@ class Schedule:
           <head>
             <meta charset="utf-8"/>
             <meta name="author" content="Dan Coleman"/>
-            <link rel="stylesheet" href="tutor.css" />
+            <link rel="stylesheet" href="../tutor.css" />
             <title>Course Schedule</title>
           </head>
 
@@ -280,7 +288,7 @@ class Schedule:
             <table class="sched">
               <tr>
                 '''
-        for hr in shrs:
+        """for hr in shrs:  ########
             htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[1]))
         for hr in mhrs:
             htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[1]))
@@ -291,7 +299,24 @@ class Schedule:
         for hr in rhrs:
             htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[1]))
         for hr in fhrs:
-            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t" % (hr[0], hr[1]))
+            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t" % (hr[0], hr[1]))"""
+        for hr in shrs:
+            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[0][0]))
+        htmlOut = htmlOut + "</tr>\n\t<tr>"
+        for hr in mhrs:
+            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[0][0]))
+        htmlOut = htmlOut + "</tr>\n\t<tr>"
+        for hr in thrs:
+            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[0][0]))
+        htmlOut = htmlOut + "</tr>\n\t<tr>"
+        for hr in whrs:
+            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[0][0]))
+        htmlOut = htmlOut + "</tr>\n\t<tr>"
+        for hr in rhrs:
+            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[0][0]))
+        htmlOut = htmlOut + "</tr>\n\t<tr>"
+        for hr in fhrs:
+            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t" % (hr[0], hr[0][0]))
         htmlOut = htmlOut + '''
               </tr>
             </table>
@@ -301,13 +326,23 @@ class Schedule:
         fout.write(htmlOut)
         fout.close() 
         
-            
+        
 def main():
     coursename = ''
     if (len(sys.argv) > 1):
         coursename = sys.argv[1].strip()
     sched = Schedule(coursename)
     sched.makeSchedule()
+    
+    """fname = "DaveBradley4ug.csv"
+    atut = Tutor(fname, sched.course)
+    times = atut.extractTimes(fname)
+    blkhrs = []
+    nblkhrs = atut.assign("m10:30", [])
+    blkhrs.extend(nblkhrs)
+    print (atut.assigned)
+    """
+    
     print ("successful")
 
     
