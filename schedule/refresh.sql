@@ -1,5 +1,6 @@
-use schedule;
+use dac3251;
 
+alter table course_for_tutor drop foreign key courseExists;
 drop table courses;
 drop table tutors;
 drop table course_for_tutor;
@@ -13,8 +14,7 @@ create table courses(
   wed varchar(255),
   thu varchar(255),
   fri varchar(255),
-  listing int not null auto_increment,
-  primary key (listing)
+  primary key (title)
 );
 
 create table tutors(
@@ -29,7 +29,9 @@ create table tutors(
 create table course_for_tutor(
   id varchar(255) not null,
   course varchar(255),
-  primary key (id)
+  primary key (id),
+  constraint courseExists foreign key (course) 
+  references courses(title)
 );
 
 create table available(

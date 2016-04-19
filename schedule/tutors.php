@@ -5,7 +5,7 @@
   
   session_start();
   
-  require('../dblogin_sched.php');
+  require_once('../../capstone/dblogin_sched.php');
   
   $tutorcount = 0;
   if (ISSET($_POST['numtutors'])):
@@ -14,7 +14,7 @@
     $tutorcount = trim(htmlspecialchars($_POST['tutorcount']));
   endif;
   
-  $db = new PDO("mysql:host=$db_hostname;dbname=schedule;charset=utf8",
+  $db = new PDO("mysql:host=$db_hostname;dbname=$db_name;charset=utf8",
     $db_username, $db_password,
     array(PDO::ATTR_EMULATE_PREPARES => false,
           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));

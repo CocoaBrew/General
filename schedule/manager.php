@@ -5,14 +5,14 @@
   
   session_start();
   
-  require_once('../dblogin_sched.php');
+  require_once('../../capstone/dblogin_sched.php');
   
   if (!isset($_SESSION['name']) || !isset($_SESSION['admin']) || 
     $_SESSION['admin'] != 'true'):
     header('Location: login.php');
   endif;
   
-  $db = new PDO("mysql:host=$db_hostname;dbname=schedule;charset=utf8",
+  $db = new PDO("mysql:host=$db_hostname;dbname=$db_name;charset=utf8",
     $db_username, $db_password,
     array(PDO::ATTR_EMULATE_PREPARES => false,
           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
@@ -49,6 +49,9 @@
     endforeach;
     
     # Reset db info
+    $query = "alter table course_for_tutor drop foreign key courseExists";
+    $stmt = $db->prepare($query);
+    $stmt->execute();
     $query = "drop table courses";
     $stmt = $db->prepare($query);
     $stmt->execute();
@@ -69,8 +72,7 @@
       wed varchar(255),
       thu varchar(255),
       fri varchar(255),
-      listing int not null auto_increment,
-      primary key (listing));";
+      primary key (title));";
     $stmt = $db->prepare($query);
     $stmt->execute();
     $query = "create table tutors(
@@ -102,7 +104,9 @@
     $query = "create table course_for_tutor(
       id varchar(255) not null,
       course varchar(255),
-      primary key (id));";
+      primary key (id),
+      constraint courseExists foreign key (course)
+      references courses(title));";
     $stmt = $db->prepare($query);
     $stmt->execute();
   endif;
@@ -135,10 +139,6 @@
     
     <p>
       <a href="logout.php">Logout</a>.
-    </p>
-    
-    <p>
-      This page is used to manage tutoring lists. 
     </p>
     
     <h2>New Course</h2>
