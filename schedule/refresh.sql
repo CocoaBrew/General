@@ -1,6 +1,5 @@
 use dac3251;
 
-alter table course_for_tutor drop foreign key courseExists;
 drop table courses;
 drop table tutors;
 drop table course_for_tutor;
@@ -29,9 +28,7 @@ create table tutors(
 create table course_for_tutor(
   id varchar(255) not null,
   course varchar(255),
-  primary key (id),
-  constraint courseExists foreign key (course) 
-  references courses(title)
+  primary key (id)
 );
 
 create table available(

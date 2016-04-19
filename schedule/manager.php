@@ -49,9 +49,6 @@
     endforeach;
     
     # Reset db info
-    $query = "alter table course_for_tutor drop foreign key courseExists";
-    $stmt = $db->prepare($query);
-    $stmt->execute();
     $query = "drop table courses";
     $stmt = $db->prepare($query);
     $stmt->execute();
@@ -104,9 +101,7 @@
     $query = "create table course_for_tutor(
       id varchar(255) not null,
       course varchar(255),
-      primary key (id),
-      constraint courseExists foreign key (course)
-      references courses(title));";
+      primary key (id));";
     $stmt = $db->prepare($query);
     $stmt->execute();
   endif;
