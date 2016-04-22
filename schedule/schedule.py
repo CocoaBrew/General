@@ -240,11 +240,11 @@ class Schedule:
     
     # Tags the assigned hours with 
     # the assigned tutors names
-    def putNamesToHrs(self):
+    """def putNamesToHrs(self):
         markedHrs = []
         for t in self.tutors:
             for hr in t.assigned:
-                schedLoc = 'na'
+                schedLoc = 'na'   # initializing to invalid value
                 for entry in self.reqHrs:
                     if (entry == hr):
                         schedLoc = self.reqHrs.index(entry)
@@ -253,6 +253,26 @@ class Schedule:
                     schedLoc >= 0):
                     markedHrs.append([self.reqHrs[schedLoc], []])
                 markedHrs[-1][1].append(t.name)
+                
+        print (self.reqHrs)
+        for i in markedHrs:
+            print i
+
+        return markedHrs"""
+
+    def putNamesToHrs(self):
+        markedHrs = []
+        for entry in self.reqHrs:
+            for t in self.tutors:
+                if (t.assigned.count(entry) != 0):
+                    marked = False
+                    for hr in markedHrs:
+                        if (hr[0] == entry and marked == False):
+                            marked = True
+                            hr[1].append(t.name)
+                    if (marked == False):
+                        markedHrs.append([entry, []])
+                        markedHrs[-1][1].append(t.name)
                 
         print (self.reqHrs)
         for i in markedHrs:

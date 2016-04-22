@@ -199,7 +199,7 @@
         $filename = 'CSVs/' . $title . '/' . $title . 'tutors.csv';
         touch($filename);
         chmod($filename, 0646);
-        $outFile = fopen($filename, 'w');
+        $outFile = fopen($filename, 'a');
         $namelist = explode('+', $tutor[0]);
         $ed = $tutor[2];
         $hrs = $tutor[3];

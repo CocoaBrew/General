@@ -136,12 +136,12 @@
               <label for="tuttype<?= $tutor ?>">
                 Tutor's Education Level: 
               </label>
-              <label for="undergrad">Undergraduate</label>
+              <label for="undergrad<?= $tutor ?>">Undergraduate</label>
               <input type="radio" name="tuttype<?= $tutor ?>"
-                id="undergrad" value="ug" />
-              <label for="grad">Graduate</label>
+                id="undergrad<?= $tutor ?>" value="ug" />
+              <label for="grad<?= $tutor ?>">Graduate</label>
               <input type="radio" name="tuttype<?= $tutor ?>"
-                id="grad" value="gr" />
+                id="grad<?= $tutor ?>" value="gr" />
             </p>
             
             <p>

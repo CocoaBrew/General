@@ -106,13 +106,6 @@
     $stmt->execute();
   endif;
   
-  # count number of tutors who completed surveys
-  $query = "select count(id) from available";
-  $stmt = $db->prepare($query);
-  $stmt->execute();
-  $curr_total = $stmt->fetchAll();
-  $curr_total = $curr_total[0]['count(id)'];
-  
   # Recheck number of courses, in case reset occurred
   $query = "select title from courses";
   $stmt = $db->prepare($query);
@@ -126,6 +119,9 @@
     <meta charset="utf-8"/>
     <meta name="author" content="Dan Coleman"/>
     <link rel="stylesheet" href="tutor.css" />
+    <!--<script src="jquery-1.12.3.min.js" async="async"></script>
+    <script src="makesched.js" async="async"></script>-->
+    <script src="manager.js" async="async"></script>
     <title>Tutor Manager</title>
   </head>
 
@@ -149,20 +145,7 @@
           the button for that course can be clicked to create the associated
           schedule.
         </p>
-        <?php foreach ($coursesAfter as $course): ?>
-          <p>
-            <button class="creator" id="<?= $course['title'] ?>" type="button"
-              <?php 
-              # get number of tutors from text file
-              $filename = 'counts/' . $course['title'] . 'tutorcount.txt';
-              $totaltutors = trim(file_get_contents($filename));
-              if ($curr_total != $totaltutors): ?>
-                disabled="disabled"
-              <?php endif;
-              ?>><?= $course['title'] ?></button>
-          </p>
-        <?php endforeach; 
-      endif; ?>
+      <?php endif; ?>
     </div>
     
     <!-- 
@@ -178,10 +161,9 @@
       <form id="dataclear" action="manager.php" method="post">
         <input type="submit" form="dataclear" name="clear" id="clear"
           value="Clear Data" /> 
-          <span class="comment">*Only use at the end of the semester*</span>
+        <span class="comment">*Only use at the end of the semester*</span>
       </form>
     </p>
-    
-    <script src="manager.js"></script>
+
   </body>
 </html>

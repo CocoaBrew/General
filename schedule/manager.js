@@ -9,48 +9,81 @@ function gebi(item)
 
 window.onload = function() 
 {
-  /*var createButtons = document.getElementsByClassName("creator");
-  var schedIds = [];
-  for (creator in createButtons)
-  {
-    var courseName = creator.id.trim();
-    schedIds.push(courseName);
-  }*/
-  document.getElementById('response').innerHTML = "brownies";
+  this.placeButtons();
   
-  document.getElementById('HowardMath').addEventListener("click", function() 
+}
+
+function placeButtons()
+{
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "getcourses.php", false);
+  xhr.send();
+  var courses = JSON.parse(xhr.responseText);
+  var btnParent = document.getElementById("schedules");
+
+  for (var course = 0; course < courses.length; course++)
+  {
+    var title = courses[course][0].trim();
+    var schedButton = document.createElement("button");
+    var btnId = document.createAttribute("id");
+    btnId.value = title;
+    schedButton.attributes.setNamedItem(btnId);
+    var btnVal = document.createAttribute("value");
+    btnVal.value = title;
+    schedButton.attributes.setNamedItem(btnVal);
+    var attr = document.createAttribute("type");
+    attr.value = "button";
+    schedButton.attributes.setNamedItem(attr);
+    schedButton.innerHTML = title;
+    schedButton.classList.add("creator");
+    schedButton.addEventListener("click", function()
     {
       makeSchedule(this.id);
     });
+    btnParent.appendChild(schedButton);
+    setDisabled(title);
+  }
+}
+
+function setDisabled(id)
+{
+  gebi(id).disabled = true;
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "checkcount.php", false);
+  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  var param = "course=" + id;
+  xhr.send(param);
+  var response = xhr.responseText;
+  if (response == "ready")
+  {
+    gebi(id).disabled = false;
+  }
 }
 
 function makeSchedule(course) 
 {
   gebi(course).disabled = true;
-  document.getElementById('response').innerHTML = "cookies";
   if (toCSV(course))
   {
-    document.getElementById('response').innerHTML = "more and more brownies";
     writeSchedule(course);
   }
 }
 
 function toCSV(course) 
-{ 
+{
   var xhr = new XMLHttpRequest();
   var success = false;
   xhr.open("POST", "convert.php", false);
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   var param = "coursename=" + course;
   xhr.send(param);
-  
+
   var response = xhr.responseText.trim();
-  document.getElementById('response').innerHTML = response;
   if (response == "created")
   {
     success = true;
   }
-  
+
   return success;
 }
 
@@ -61,12 +94,13 @@ function writeSchedule(course)
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   var param = "course=" + course;
   xhr.send(param);
-  var response = xhr.responseText;
-  gebi('response').innerHTML = response;
+  //var response = xhr.responseText;
+ 
+  gebi('response').innerHTML = '(' + xhr.responseText + ')';
   
   if (response == "written")
   {
-    var schedButton = document.createElement("input");
+    var schedButton = document.createElement("button");
     var btnVal = document.createAttribute("value");
     btnVal.value = course;
     schedButton.attributes.setNamedItem(btnVal);
@@ -75,7 +109,7 @@ function writeSchedule(course)
     attr.value = "button";
     schedButton.attributes.setNamedItem(attr);
     
-    schedButton.addEventListener("onclick", function()
+    schedButton.addEventListener("click", function()
     {
       openSched(this);
     });
@@ -85,7 +119,7 @@ function writeSchedule(course)
   }
   
   /*
-    //htmlDoc w draggable entries?.....scriptaculous? prototype?....
+    //htmlDoc w draggable entries?.....scriptaculous?....
     save on change?????
   */
 }

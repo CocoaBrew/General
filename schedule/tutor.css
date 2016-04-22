@@ -72,3 +72,10 @@ td
   border-style: solid;
   border-color: Black;
 }
+
+.creator
+{
+  margin: .5cm;
+  margin-top: .3cm;
+  margin-bottom: .3cm;
+}
