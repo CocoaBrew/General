@@ -15,15 +15,21 @@
   endif;
   
   $retVal = "failed";
+  $course = "Jax7";
   
-  $filename = "schedules/" . $course . ".html";
+  $dir = "schedules/";
+  if (!file_exists($dir)):
+    mkdir($dir, 0703);
+    chmod($dir, 0703);
+  endif;
+  $filename = $dir . $course . ".html";
   touch($filename);
-  chmod($filename, 0626);
-  
+  //chmod($filename, 0606);
+
   if (exec("python schedule.py $course") == "successful"):
     $retVal = "written";
   endif;
   
-  echo $retVal;
+  echo $retVal; 
   
 ?>

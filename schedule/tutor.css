@@ -79,3 +79,8 @@ td
   margin-top: .3cm;
   margin-bottom: .3cm;
 }
+
+.noScheds
+{
+  display: none;
+}

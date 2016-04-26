@@ -85,19 +85,20 @@ class Tutor:
     # to the schedule of this tutor
     def assign(self, hr, blockList, reqList, priority):
         newBlocks = []
-        if len(self.assigned) < self.shiftsCleared:
-            availCode = int(self.status(hr[1:], hr[0]))
-            if (availCode >= priority and priority >= 0): ##entire sect makeAssign??
-                newBlocks.append(hr)
-                self.assigned.append(hr)
+        if (blockList.count(hr) < 2):
+            if len(self.assigned) < self.shiftsCleared:
+                availCode = int(self.status(hr[1:], hr[0]))
+                if (availCode == int(priority)): ##entire sect makeAssign??
+                    newBlocks.append(hr)
+                    self.assigned.append(hr)
 
-                '''nt = self.nextTime(hr)
-                pt = self.prevTime(hr)
-                   
-                """newBlocks.extend(self.assign(nt, blockList.append(hr),
-                    reqList, priority - 1))
-                newBlocks.extend(self.assign(pt, blockList.append(hr),
-                    reqList, priority - 1))"""'''
+                    '''nt = self.nextTime(hr)
+                    pt = self.prevTime(hr)
+                
+                   """newBlocks.extend(self.assign(nt, blockList.append(hr),
+                       reqList, priority - 1))
+                    newBlocks.extend(self.assign(pt, blockList.append(hr),
+                        reqList, priority - 1))"""'''
 
         print ("mark assign")  #####
         return newBlocks
@@ -183,26 +184,25 @@ class Schedule:
         hoursInfo.close()
         return hList
         
-
     # Create the tutoring schedule
     def makeSchedule(self):
-        UPP_BOUND = 50  # limits high priority runs
-        ALPHA = .3
+        UPP_BOUND = 25  # limits high priority runs
+        ALPHA = .85
         countRuns = 0
         while not self.schedDone(ALPHA):
             priority = 1
-            if (countRuns * ALPHA >= UPP_BOUND * ALPHA):
+            if (countRuns * ALPHA >= UPP_BOUND):
                 priority = 0
             self.blockHrs = []  # hrs that are already assigned
             for hr in self.reqHrs:
-                if (self.blockHrs.count(hr) <= 2):  ##format reqHrs -> s09:30
-                    for tutor in self.tutors:
-                        if (self.blockHrs.count(hr) <= 2):
-                            self.blockHrs.extend(tutor.assign(hr, 
-                                self.blockHrs, self.reqHrs, priority))
-            self.checkTutorsFull()
-            countRuns += 1
-            
+                ##if (self.blockHrs.count(hr) <= 2):  ##format reqHrs -> s09:30
+                for tutor in self.tutors:
+                    #if (self.blockHrs.count(hr) < 2):
+                        self.blockHrs.extend(tutor.assign(hr, 
+                            self.blockHrs, self.reqHrs, priority))
+            self.checkTutorsFull(True)
+            countRuns = countRuns + 1
+
         self.reqHrs = self.putNamesToHrs()
         self.formatOutput()
     
@@ -224,19 +224,21 @@ class Schedule:
 
     # Verifies whether schedule has assigned each tutor 
     # to the number of hours he is cleared to work
-    def checkTutorsFull(self):
+    def checkTutorsFull(self, assumeFull):
         success = True
-        for t in self.tutors:                     ### vvvvv
+        incomplete = []
+        for t in self.tutors:                     ### 
             if t.shiftsCleared != len(t.assigned): ##can comment
-                success = False                     ## out these temp
+                incomplete.append(t) 
+                success = False              ## out these temp
         if not success:
-            self.blockHrs = []
-            for t in self.tutors:
-                t.assigned = []
-            # mix for improved result next time
-            random.shuffle(self.reqHrs)
-            random.shuffle(self.tutors)
-            print ("mark fail")  #######
+            for tut in incomplete:
+                for hr in self.reqHrs:
+                    if hr not in tut.assigned:
+                        tut.assign(hr, self.blockHrs, self.reqHrs, 0)
+            return self.checkTutorsFull(True)
+        else:
+            return True
     
     # Tags the assigned hours with 
     # the assigned tutors names
@@ -282,6 +284,11 @@ class Schedule:
 
     # Writes created schedule to file
     def formatOutput(self):  ######
+        # Schedule will always present these hours
+        SCHED_HRS = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', 
+            '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', 
+            '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', 
+            '19:00', '19:30', '20:00', '20:30']
         shrs = []
         mhrs = []
         thrs = []
@@ -327,21 +334,75 @@ class Schedule:
             
             <table class="sched">
               <tr>
-                '''
-        for hr in shrs:  ########
-            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[1]))
-        for hr in mhrs:
-            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[1]))
-        for hr in thrs:
-            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[1]))
-        for hr in whrs:
-            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[1]))
-        for hr in rhrs:
-            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t\t" % (hr[0], hr[1]))
-        for hr in fhrs:
-            htmlOut = htmlOut + ("<td>%s -> %s</td>\n\t" % (hr[0], hr[1]))
-        htmlOut = htmlOut + '''
+                <th>Times</th>
+                <th>Sunday</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
               </tr>
+              '''
+        for time in SCHED_HRS:
+            htmlOut = htmlOut + '''
+              <tr>
+                ''' + ("<td>%s</td>\n\t\t" % (time))
+            filled = False
+            for hr in shrs:  ########
+                if (hr[0][1:] == time):
+                    htmlOut = htmlOut + ("<td>%s</td>\n\t\t" % 
+                        ((", ").join(hr[1])))
+                    filled = True
+            if (not filled):
+                htmlOut = htmlOut + "<td> </td>\n\t\t"
+
+            filled = False
+            for hr in mhrs:  ########
+                if (hr[0][1:] == time):
+                    htmlOut = htmlOut + ("<td>%s</td>\n\t\t" % 
+                        ((", ").join(hr[1])))
+                    filled = True
+            if (not filled):
+                htmlOut = htmlOut + "<td> </td>\n\t\t"
+
+            filled = False
+            for hr in thrs:  ########
+                if (hr[0][1:] == time):
+                    htmlOut = htmlOut + ("<td>%s</td>\n\t\t" % 
+                        ((", ").join(hr[1])))
+                    filled = True
+            if (not filled):
+                htmlOut = htmlOut + "<td> </td>\n\t\t"
+
+            filled = False
+            for hr in whrs:  ########
+                if (hr[0][1:] == time):
+                    htmlOut = htmlOut + ("<td>%s</td>\n\t\t" % 
+                        ((", ").join(hr[1])))
+                    filled = True
+            if (not filled):
+                htmlOut = htmlOut + "<td> </td>\n\t\t"
+
+            filled = False
+            for hr in rhrs:  ########
+                if (hr[0][1:] == time):
+                    htmlOut = htmlOut + ("<td>%s</td>\n\t\t" % 
+                        ((", ").join(hr[1])))
+                    filled = True
+            if (not filled):
+                htmlOut = htmlOut + "<td> </td>\n\t\t"
+
+            filled = False
+            for hr in fhrs:  ########
+                if (hr[0][1:] == time):
+                    htmlOut = htmlOut + ("<td>%s</td>\n\t\t" % 
+                        ((", ").join(hr[1])))
+                    filled = True
+            if (not filled):
+                htmlOut = htmlOut + "<td></td>\n\t\t"
+            htmlOut = htmlOut + '''
+              </tr>'''
+        htmlOut = htmlOut + '''
             </table>
           </body>
         </html>
@@ -356,7 +417,7 @@ def main():
         coursename = sys.argv[1].strip()
     sched = Schedule(coursename)
     sched.makeSchedule()
-    
+    #sched.schedDone(.5)
     print ("successful")
 
     

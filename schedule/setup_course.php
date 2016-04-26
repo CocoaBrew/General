@@ -181,7 +181,7 @@
       
       $filename = 'CSVs/' . $title; 
       mkdir($filename);
-      chmod($filename, 0733);
+      chmod($filename, 0633);
       $filename = $filename . '/' . $title . '.csv';
       $hours = array($sun, $mon, $tue, $wed, $thu, $fri);
       storeHrs($hours, $filename);

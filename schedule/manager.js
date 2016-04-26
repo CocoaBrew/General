@@ -10,7 +10,23 @@ function gebi(item)
 window.onload = function() 
 {
   this.placeButtons();
-  
+
+  gebi('clear').onclick = resetData;
+}
+
+function resetData()
+{
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "reset.php", false);
+  xhr.send();
+  var response = xhr.responseText;
+
+  if (response == "cleared")
+  {
+    gebi('schedLinks').classList.add("noScheds");
+    gebi('schedules').classList.add("noScheds");
+    this.placeButtons();
+  }
 }
 
 function placeButtons()
@@ -20,6 +36,11 @@ function placeButtons()
   xhr.send();
   var courses = JSON.parse(xhr.responseText);
   var btnParent = document.getElementById("schedules");
+
+  if (courses.length > 0)
+  {
+    btnParent.classList.remove("noScheds");
+  }
 
   for (var course = 0; course < courses.length; course++)
   {
@@ -94,9 +115,9 @@ function writeSchedule(course)
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   var param = "course=" + course;
   xhr.send(param);
-  //var response = xhr.responseText;
+  var response = xhr.responseText;
  
-  gebi('response').innerHTML = '(' + xhr.responseText + ')';
+  gebi('response').innerHTML = '(' + response + ')';
   
   if (response == "written")
   {
@@ -116,6 +137,7 @@ function writeSchedule(course)
     
     var linkParent = gebi('schedLinks');
     linkParent.appendChild(schedButton);
+    linkParent.classList.remove("noScheds");
   }
   
   /*
