@@ -16,20 +16,68 @@ window.onload = function()
 
 function resetData()
 {
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", "reset.php", false);
-  xhr.send();
-  var response = xhr.responseText;
-
-  if (response == "cleared")
+  var eraseData = confirm("Do you want to erase all the tutor, course, " +
+    "and scheduling information?\nThis action is not recoverable.");
+  if (eraseData == true)
   {
-    gebi('schedLinks').classList.add("noScheds");
-    gebi('schedules').classList.add("noScheds");
-    this.placeButtons();
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "reset.php", false);
+    xhr.send();
+    var response = xhr.responseText;
+
+    if (response == "cleared")
+    {
+      gebi('schedLinks').classList.add("noScheds");
+      gebi('schedules').classList.add("noScheds");
+      this.placeButtons();
+    }
   }
 }
 
 function placeButtons()
+{
+  writeCreatorButtons();
+  placeCurrSchedLinks();
+}
+
+function placeCurrSchedLinks()
+{
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "currschedules.php", false);
+  xhr.send();
+  var schedules = JSON.parse(xhr.responseText);
+  //if (count(schedules) == 1), wSL(schedules); else for loop thru
+  // count may be a type check
+  if (schedules != "")
+  {
+    if (typeof schedules === 'object')
+    {
+      for (var i = 0; i < schedules.length; i++)
+      {
+        var course = schedules[i];
+        writeSchedLink(course);
+        gebi(course).addEventListener("mouseover", function()
+        {
+          confirmRewrite(this.id);
+        });
+      }
+    }
+  }
+}
+
+function confirmRewrite(course)
+{
+  gebi(course).disabled = true;
+  var rewrite = window.confirm("You already have a schedule for " + 
+    course.trim() + ".\nWould you like to rewrite this schedule?");
+  if (rewrite == true)
+  {
+    makeSchedule(course);
+  }
+  gebi(course).disabled = false;
+}
+
+function writeCreatorButtons(courses)
 {
   var xhr = new XMLHttpRequest();
   xhr.open("POST", "getcourses.php", false);
@@ -88,6 +136,7 @@ function makeSchedule(course)
   {
     writeSchedule(course);
   }
+  gebi(course).disabled = false;
 }
 
 function toCSV(course) 
@@ -115,41 +164,61 @@ function writeSchedule(course)
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   var param = "course=" + course;
   xhr.send(param);
-  var response = xhr.responseText;
+  var response = xhr.responseText.trim();
  
   gebi('response').innerHTML = '(' + response + ')';
-  
   if (response == "written")
   {
-    var schedButton = document.createElement("button");
-    var btnVal = document.createAttribute("value");
-    btnVal.value = course;
-    schedButton.attributes.setNamedItem(btnVal);
-    
-    var attr = document.createAttribute("type");
-    attr.value = "button";
-    schedButton.attributes.setNamedItem(attr);
-    
-    schedButton.addEventListener("click", function()
-    {
-      openSched(this);
-    });
-    
-    var linkParent = gebi('schedLinks');
-    linkParent.appendChild(schedButton);
-    linkParent.classList.remove("noScheds");
+    writeSchedLink(course);
   }
   
   /*
-    //htmlDoc w draggable entries?.....scriptaculous?....
-    save on change?????
+    Updates for the Future: 
+    htmlSchedDoc w draggable entries?.....scriptaculous?
+    .............save on change?????
   */
 }
 
-function openSched(btn)
+function writeSchedLink(course)
 {
-  var course = btn.value.trim();
-  var href = "schedules/" + course + ".html";
+  removeExistBtn(course);
+  var schedButton = document.createElement("button");
+  var btnVal = document.createAttribute("value");
+  btnVal.value = course;
+  schedButton.attributes.setNamedItem(btnVal);
+  
+  var attr = document.createAttribute("type");
+  attr.value = "button";
+  schedButton.attributes.setNamedItem(attr);
+  schedButton.classList.add("creator");
+  schedButton.innerHTML = course;
+    
+  schedButton.addEventListener("click", function()
+  {
+    openSched(this.value);
+  });
+    
+  var linkParent = gebi('schedLinks');
+  linkParent.appendChild(schedButton);
+  linkParent.classList.remove("noScheds");
+}
+
+function removeExistBtn(coursename)
+{
+  var schedules = gebi("schedLinks").getElementsByTagName("button");
+  for (var i = 0; i < schedules.length; i++)
+  {
+    if (schedules[i].value == coursename)
+    {
+      schedules[i].parentNode.removeChild(schedules[i]);
+    }
+  }
+}
+
+function openSched(btnVal)
+{
+  var course = btnVal.trim();
+  var href = "sched_files/" + course + ".html";
   window.open(href, "_blank");
 }
 

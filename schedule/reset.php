@@ -45,7 +45,11 @@
     unlink($countFilePath);
   endforeach;
 
-  exec("rm -r schedules");
+  # Remove all schedules
+  $schedDir = "sched_files/*";
+  foreach (glob($schedDir) as $file):
+    unlink($file);
+  endforeach;
   
   # Reset db info
   $query = "drop table courses";

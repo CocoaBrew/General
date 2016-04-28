@@ -242,26 +242,6 @@ class Schedule:
     
     # Tags the assigned hours with 
     # the assigned tutors names
-    """def putNamesToHrs(self):
-        markedHrs = []
-        for t in self.tutors:
-            for hr in t.assigned:
-                schedLoc = 'na'   # initializing to invalid value
-                for entry in self.reqHrs:
-                    if (entry == hr):
-                        schedLoc = self.reqHrs.index(entry)
-                if (isinstance(self.reqHrs[schedLoc], str) or 
-                    isinstance(self.reqHrs[schedLoc], unicode) and
-                    schedLoc >= 0):
-                    markedHrs.append([self.reqHrs[schedLoc], []])
-                markedHrs[-1][1].append(t.name)
-                
-        print (self.reqHrs)
-        for i in markedHrs:
-            print i
-
-        return markedHrs"""
-
     def putNamesToHrs(self):
         markedHrs = []
         for entry in self.reqHrs:
@@ -314,7 +294,7 @@ class Schedule:
         print (whrs)
         print (rhrs)
         print (fhrs)
-        filename = "schedules/" + self.course + ".html"
+        filename = "sched_files/" + self.course + ".html"
         fout = open(filename, 'w')
         htmlOut = '''
         <!DOCTYPE html>
