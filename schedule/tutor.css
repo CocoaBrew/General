@@ -1,3 +1,16 @@
+body
+{
+  font-family: sans-serif;
+  background-color: LightCyan;
+}
+
+col
+{
+  background-color: Teal;
+  padding-left: .3cm;
+  padding-right: .3cm;
+}
+
 h1
 {
   text-align: center;
@@ -8,11 +21,6 @@ label
   font-weight: bold;
 }
 
-body
-{
-  font-family: sans-serif;
-}
-
 select
 {
   vertical-align: middle;
@@ -21,21 +29,38 @@ select
 table
 {
   text-align: center;
+  background-color: DarkSeaGreen;
+  color: White;
+  border-collapse: collapse;
 }
 
 td
 {
   border: 2pt;
   border-style: Solid;
-  border-color: DarkCyan;
+  border-color: Teal;
   padding: .2cm;
   padding-left: .3cm;
   padding-right: .3cm;
 }
 
-#times
+th
 {
-  margin-left: 1cm;
+  background-color: DarkCyan;
+  padding-left: .3cm;
+  padding-right: .3cm;
+}
+
+#coursetitle
+{
+  font-variant: small-caps;
+  text-align: center;
+}
+
+#loginbutton
+{
+  margin-top: .3cm;
+  padding: .1cm;
 }
 
 #loginframe
@@ -49,16 +74,30 @@ td
   text-align: center;
 }
 
-.singletutor
+#logoutlink
 {
-  margin-top: 1cm;
-  margin-bottom: 1cm;
+  text-align: right;
+  float: right;
+  position: fixed;
+  right: 1cm;
+  top: 1cm;
 }
 
-.comment
+#pswdchange
 {
-  font-style: italic;
-  font-size: .8em;
+  text-align: center;
+  margin: .6cm;
+  margin-top: .7cm;
+}
+
+#pswdresetinput
+{
+  text-align: right;
+}
+
+#times
+{
+  margin-left: 1cm;
 }
 
 .biglabel
@@ -66,11 +105,10 @@ td
   font-size: 1.2em;
 }
 
-.sched
+.comment
 {
-  border: 3pt;
-  border-style: solid;
-  border-color: Black;
+  font-style: italic;
+  font-size: .8em;
 }
 
 .creator
@@ -80,7 +118,27 @@ td
   margin-bottom: .3cm;
 }
 
+.maincontent
+{
+  width: 60%;
+  margin: auto;
+  text-align: left;
+}
+
 .noScheds
 {
   display: none;
+}
+
+.sched
+{
+  border: 3pt;
+  border-style: solid;
+  border-color: Navy;
+}
+
+.singletutor
+{
+  margin-top: 1cm;
+  margin-bottom: 1cm;
 }

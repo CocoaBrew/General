@@ -4,6 +4,7 @@
   ini_set('display_errors', '1');
 
   require_once('../../capstone/dblogin_sched.php');
+  session_start();
 
   if (!isset($_SESSION['name']) || !isset($_SESSION['admin']) || 
     $_SESSION['admin'] != 'true'):
@@ -85,7 +86,7 @@
   $stmt = $db->prepare($query);
   $stmt->execute();
   $query = "create table available(
-    id varchar(255),
+    id varchar(255) not null,
     sbusy varchar(255),
     mbusy varchar(255),
     tbusy varchar(255),
@@ -107,7 +108,6 @@
     primary key (id));";
   $stmt = $db->prepare($query);
   $stmt->execute();
-
 
   echo "cleared";
 

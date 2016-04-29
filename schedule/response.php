@@ -14,12 +14,12 @@
           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
   
   if (isset($_SESSION['name'])):
-    if ((isset($_POST['suprefhrs']) || isset($_POST['moprefhrs']) ||
+    if (isset($_POST['suprefhrs']) || isset($_POST['moprefhrs']) ||
       isset($_POST['tuprefhrs']) || isset($_POST['weprefhrs']) ||
-        isset($_POST['thprefhrs']) || isset($_POST['frprefhrs'])) &&
-      (isset($_POST['subusyhrs']) || isset($_POST['mobusyhrs']) ||
+        isset($_POST['thprefhrs']) || isset($_POST['frprefhrs']) ||
+      isset($_POST['subusyhrs']) || isset($_POST['mobusyhrs']) ||
         isset($_POST['tubusyhrs']) || isset($_POST['webusyhrs']) ||
-        isset($_POST['thbusyhrs']) || isset($_POST['frbusyhrs']))):
+        isset($_POST['thbusyhrs']) || isset($_POST['frbusyhrs'])):
     
       # format data to put in db
       if (isset($_POST['suprefhrs'])):

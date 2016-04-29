@@ -309,11 +309,14 @@ class Schedule:
           <body>
             <h1>Course Schedule</h1>
     
-            <h2>%s</h2>''' % (self.course)
+            <h2 id="coursetitle">%s</h2>''' % (self.course)
         htmlOut = htmlOut + '''
             
             <table class="sched">
-              <tr>
+              <colgroup>
+                <col span="1">
+              </colgroup>
+              <tr class="tableheaders">
                 <th>Times</th>
                 <th>Sunday</th>
                 <th>Monday</th>
@@ -379,7 +382,7 @@ class Schedule:
                         ((", ").join(hr[1])))
                     filled = True
             if (not filled):
-                htmlOut = htmlOut + "<td></td>\n\t\t"
+                htmlOut = htmlOut + "<td> </td>\n\t\t"
             htmlOut = htmlOut + '''
               </tr>'''
         htmlOut = htmlOut + '''

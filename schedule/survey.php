@@ -101,7 +101,7 @@
   <body>
     <h1>Survey for Tutoring Schedule</h1>
 
-    <section id="info">
+    <section id="info" class="maincontent">
       <form action="response.php" method="post" id="getinfo">
         <h2>Name: <?= $name ?></h2>
         
@@ -115,7 +115,7 @@
         <p>
           <label for="suprefhrs">Preferred Sunday Hrs: </label>
           <select form="getinfo" name="suprefhrs[]" id="suprefhrs"
-            multiple="multiple" size="3">
+            multiple="multiple" size="4">
               <?php foreach ($hourlist[0] as $hour): ?>
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>
@@ -125,7 +125,7 @@
         <p>
           <label for="moprefhrs">Preferred Monday Hrs: </label>
           <select form="getinfo" name="moprefhrs[]" id="moprefhrs"
-            multiple="multiple" size="3">
+            multiple="multiple" size="4">
               <?php foreach ($hourlist[1] as $hour): ?>
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>
@@ -135,7 +135,7 @@
         <p>
           <label for="tuprefhrs">Preferred Tuesday Hrs: </label>
           <select form="getinfo" name="tuprefhrs[]" id="tuprefhrs"
-            multiple="multiple" size="3">
+            multiple="multiple" size="4">
               <?php foreach ($hourlist[2] as $hour): ?>
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>
@@ -145,7 +145,7 @@
         <p>
           <label for="weprefhrs">Preferred Wednesday Hrs: </label>
           <select form="getinfo" name="weprefhrs[]" id="weprefhrs"
-            multiple="multiple" size="3">
+            multiple="multiple" size="4">
               <?php foreach ($hourlist[3] as $hour): ?>
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>
@@ -155,7 +155,7 @@
         <p>
           <label for="thprefhrs">Preferred Thursday Hrs: </label>
           <select form="getinfo" name="thprefhrs[]" id="thprefhrs"
-            multiple="multiple" size="3">
+            multiple="multiple" size="4">
               <?php foreach ($hourlist[4] as $hour): ?>
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>
@@ -165,7 +165,7 @@
         <p>
           <label for="saprefhrs">Preferred Friday Hrs: </label>
           <select form="getinfo" name="saprefhrs[]" id="saprefhrs"
-            multiple="multiple" size="3">
+            multiple="multiple" size="4">
               <?php foreach ($hourlist[5] as $hour): ?>
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>
@@ -182,7 +182,7 @@
         <p>
           <label for="subusyhrs">Sunday Class Times: </label>
           <select form="getinfo" name="subusyhrs[]" id="subusyhrs"
-            multiple="multiple" size="3">
+            multiple="multiple" size="4">
               <?php foreach ($hourlist[0] as $hour): ?>
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>
@@ -192,7 +192,7 @@
         <p>
           <label for="mobusyhrs">Monday Class Times: </label>
           <select form="getinfo" name="mobusyhrs[]" id="mobusyhrs"
-            multiple="multiple" size="3">
+            multiple="multiple" size="4">
               <?php foreach ($hourlist[1] as $hour): ?>
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>
@@ -202,7 +202,7 @@
         <p>
           <label for="tubusyhrs">Tuesday Class Times: </label>
           <select form="getinfo" name="tubusyhrs[]" id="tubusyhrs"
-            multiple="multiple" size="3">
+            multiple="multiple" size="4">
               <?php foreach ($hourlist[2] as $hour): ?>
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>
@@ -212,7 +212,7 @@
         <p>
           <label for="webusyhrs">Wednesday Class Times: </label>
           <select form="getinfo" name="webusyhrs[]" id="webusyhrs"
-            multiple="multiple" size="3">
+            multiple="multiple" size="4">
               <?php foreach ($hourlist[3] as $hour): ?>
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>
@@ -222,7 +222,7 @@
         <p>
           <label for="thbusyhrs">Thursday Class Times: </label>
           <select form="getinfo" name="thbusyhrs[]" id="thbusyhrs"
-            multiple="multiple" size="3">
+            multiple="multiple" size="4">
               <?php foreach ($hourlist[4] as $hour): ?>
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>
@@ -232,7 +232,7 @@
         <p>
           <label for="frbusyhrs">Friday Class Times: </label>
           <select form="getinfo" name="frbusyhrs[]" id="frbusyhrs"
-            multiple="multiple" size="3">
+            multiple="multiple" size="4">
               <?php foreach ($hourlist[5] as $hour): ?>
                 <option value=<?= $hour ?>><?= $hour ?></option>
               <?php endforeach; ?>

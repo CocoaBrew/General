@@ -114,7 +114,7 @@
   function storeHrs($week_hours, $filename)
   { 
     touch($filename);
-    chmod($filename, 0646);
+    chmod($filename, 0746);
     $outFile = fopen($filename, 'w');
     $hrs = makeHrsList(getDayHrs($week_hours));
     foreach ($hrs as $hr):
@@ -181,7 +181,7 @@
       
       $filename = 'CSVs/' . $title; 
       mkdir($filename);
-      chmod($filename, 0633);
+      chmod($filename, 0733);
       $filename = $filename . '/' . $title . '.csv';
       $hours = array($sun, $mon, $tue, $wed, $thu, $fri);
       storeHrs($hours, $filename);
@@ -198,7 +198,7 @@
         # Add tutor info to course_tutors csv
         $filename = 'CSVs/' . $title . '/' . $title . 'tutors.csv';
         touch($filename);
-        chmod($filename, 0646);
+        chmod($filename, 0746);
         $outFile = fopen($filename, 'a');
         $namelist = explode('+', $tutor[0]);
         $ed = $tutor[2];

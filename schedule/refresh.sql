@@ -32,7 +32,7 @@ create table course_for_tutor(
 );
 
 create table available(
-  id varchar(255),
+  id varchar(255) not null,
   sbusy varchar(255),
   mbusy varchar(255),
   tbusy varchar(255),

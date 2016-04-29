@@ -82,7 +82,7 @@
           
           <input type="hidden" name="course" value="<?= $course ?>" />
           
-          <button type="submit">Login</button>
+          <button type="submit" id="loginbutton">Login</button>
         </form>
       </p>
     <?php else: ?>

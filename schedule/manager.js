@@ -10,8 +10,8 @@ function gebi(item)
 window.onload = function() 
 {
   this.placeButtons();
-
   gebi('clear').onclick = resetData;
+  gebi('adminpswd').onclick = passcodeDialog;
 }
 
 function resetData()
@@ -32,6 +32,17 @@ function resetData()
       this.placeButtons();
     }
   }
+}
+
+function passcodeDialog()
+{
+  var h = 275;
+  var w = 375;
+  var left = (window.screen.width/2) - (w/2);
+  var top = (window.screen.height/3) - (h/2);
+  var pscdWindow = open("changepasscode.php", "_blank", "height="+h+
+    ",width="+w+",location=no,menubar=no,scrollbars=no,status=no,titlebar=no"+
+    ",toolbar=no,left="+left+",top="+top);
 }
 
 function placeButtons()
@@ -123,6 +134,10 @@ function setDisabled(id)
   var param = "course=" + id;
   xhr.send(param);
   var response = xhr.responseText;
+  if (id == "TEST7")
+  {
+    gebi("response").innerHTML = response;
+  }
   if (response == "ready")
   {
     gebi(id).disabled = false;
@@ -165,8 +180,7 @@ function writeSchedule(course)
   var param = "course=" + course;
   xhr.send(param);
   var response = xhr.responseText.trim();
- 
-  gebi('response').innerHTML = '(' + response + ')';
+
   if (response == "written")
   {
     writeSchedLink(course);
@@ -175,7 +189,7 @@ function writeSchedule(course)
   /*
     Updates for the Future: 
     htmlSchedDoc w draggable entries?.....scriptaculous?
-    .............save on change?????
+    ..................................save on change????
   */
 }
 
