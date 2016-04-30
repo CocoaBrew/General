@@ -6,7 +6,6 @@
   session_start();
   
   require_once('../../capstone/dblogin_sched.php');
-  require('contact.php');
   
   # Functions for checking the validity and security
   # of an email address
@@ -24,7 +23,6 @@
       return false;
     endif;
   }
-  
   function isFiltered($email_str)
   {
     $filtered_email = filter_var($email_str, FILTER_VALIDATE_EMAIL);
@@ -35,7 +33,7 @@
     endif;
   }  
   
-  # Functions to store the required hrs in a file
+  # Functions to store the desired tutoring hrs in a file
   function getDayHrs($week_hours)
   {
     $hour_data = array();
@@ -73,7 +71,6 @@
   
     return $hour_data;
   }
-  
   function makeHrsList($hour_info)
   {
     $hour_list = array();
@@ -110,7 +107,6 @@
     
     return $hour_list;
   }
-  
   function storeHrs($week_hours, $filename)
   { 
     touch($filename);
@@ -167,6 +163,7 @@
       $fr_end = trim(htmlspecialchars($_POST['friend']));
       $fri = $fr_beg . '/' . $fr_end;
     
+      # put course information into db
       $query = "insert into courses (title, sun, mon, tue, wed, thu, fri)
         values (:title, :sun, :mon, :tue, :wed, :thu, :fri)";
       $stmt = $db->prepare($query);
@@ -179,6 +176,7 @@
       $stmt->bindParam(':fri', $fri, PDO::PARAM_STR);
       $stmt->execute();
       
+      # write hours to CSV
       $filename = 'CSVs/' . $title; 
       mkdir($filename);
       chmod($filename, 0733);
@@ -209,7 +207,6 @@
         
         # Email
         $emailadd = $tutor[1];
-        $survey_addr = $survey_url + "?c=$title";
         $subject = "Availability Survey";
         $content = "
           <html>
@@ -229,7 +226,7 @@
             </p>
             <br />
             <p>
-              <a href=$survey_addr>Tutoring Survey</a>
+              <a href=$survey_url>Tutoring Survey</a>
             </p>
             <br />
             <p>
@@ -265,6 +262,12 @@
       $message = "Course Setup Failed. Please Try Again.";
     endif;
   endif;
+
+  # Retrieves contact information.
+  $infoParts = file('contact.txt', FILE_IGNORE_NEW_LINES);
+  $contact_name = $infoParts[0];
+  $contact_email = $infoParts[1];
+  $survey_url = $infoParts[2];
     
 ?>
 <!DOCTYPE html>

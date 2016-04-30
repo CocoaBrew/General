@@ -4,9 +4,9 @@
   ini_set('display_errors', '1');
   
   $schedDir = "sched_files/*";
-
   $courseNames = array();
-
+  
+  # Retrieve names of all courses
   foreach (glob($schedDir) as $file):
     $filename = basename($file);
     $course = str_replace(".html", "", $filename);

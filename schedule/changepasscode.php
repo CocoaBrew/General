@@ -7,6 +7,7 @@
 
   require_once('../../capstone/dblogin_sched.php');
   
+  // check admin status
   if (!isset($_SESSION['name']) || !isset($_SESSION['admin']) || 
     $_SESSION['admin'] != 'true'):
     header('Location: login.php');
@@ -28,14 +29,17 @@
       array(PDO::ATTR_EMULATE_PREPARES => false,
            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 
+      // count number of entries with name of $fullname
       $query = "select count(id) from admin where name = :name";
       $stmt = $db->prepare($query);
       $stmt->bindParam(':name', $fullname, PDO::PARAM_STR);
       $stmt->execute();
       $retVal = $stmt->fetchAll();
       if ($retVal[0]['count(id)'] > 0):
+        // update existing entry
         $query = "update admin set id = :pid where name = :name";
       else:
+        // create new entry
         $query = "insert into admin(id, name) values (:pid, :name)";
       endif;
       $stmt = $db->prepare($query);
@@ -85,14 +89,16 @@
           </p>
         </div>
         
-        <button type="button" id="nochange">Cancel</button>
+        <button type="button" id="nochangepscd">Cancel</button>
         <button type="submit" name="change" id="makechange">
           Submit Change
         </button>
       </form>
+
       <?php if ($message != ''): ?>
         <p><?= $message ?></p>
       <?php endif; ?>
+
     </section>
   </body>
 </html>

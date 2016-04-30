@@ -5,7 +5,6 @@
   
   session_start();
   
-  require('contact.php');
   require_once('../../capstone/dblogin_sched.php');
   
   $db = new PDO("mysql:host=$db_hostname;dbname=$db_name;charset=utf8",
@@ -153,6 +152,12 @@
   endif;
 
   $fname = explode('+', $_SESSION['name'])[0];
+
+  # Retrieves contact information.
+  $infoParts = file('contact.txt', FILE_IGNORE_NEW_LINES);
+  $contact_name = $infoParts[0];
+  $contact_email = $infoParts[1];
+  $survey_url = $infoParts[2];
 
 ?>
 <!DOCTYPE html>

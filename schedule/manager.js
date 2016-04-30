@@ -1,7 +1,13 @@
-// Dan Coleman
+/*
+  Author: Dan Coleman
+  JS for manager.php
+*/
 
 "use strict";
 
+/*
+** Returns an element by a given ID.
+*/
 function gebi(item)
 {
   return document.getElementById(item);
@@ -12,8 +18,12 @@ window.onload = function()
   this.placeButtons();
   gebi('clear').onclick = resetData;
   gebi('adminpswd').onclick = passcodeDialog;
+  gebi('editcontact').onclick = contactDialog;
 }
 
+/*
+** Clears all data from system.
+*/
 function resetData()
 {
   var eraseData = confirm("Do you want to erase all the tutor, course, " +
@@ -34,6 +44,9 @@ function resetData()
   }
 }
 
+/*
+** Opens window to edit admin passcode.
+*/
 function passcodeDialog()
 {
   var h = 275;
@@ -45,22 +58,45 @@ function passcodeDialog()
     ",toolbar=no,left="+left+",top="+top);
 }
 
+/*
+** Opens window to edit main contact info.
+*/
+function contactDialog()
+{
+  // height and width
+  var h = 275;
+  var w = 450;
+
+  // center in screen
+  var left = (window.screen.width/2) - (w/2);
+  var top = (window.screen.height/3) - (h/2);
+  var pscdWindow = open("editcontact.php", "_blank", "height="+h+
+    ",width="+w+",location=no,menubar=no,scrollbars=no,status=no,titlebar=no"+
+    ",toolbar=no,left="+left+",top="+top);
+}
+
+/*
+** Formats and inserts buttons into the page.
+*/
 function placeButtons()
 {
   writeCreatorButtons();
   placeCurrSchedLinks();
 }
 
+/*
+** Inserts links to schedules that have already been made.
+*/
 function placeCurrSchedLinks()
 {
   var xhr = new XMLHttpRequest();
   xhr.open("POST", "currschedules.php", false);
   xhr.send();
   var schedules = JSON.parse(xhr.responseText);
-  //if (count(schedules) == 1), wSL(schedules); else for loop thru
-  // count may be a type check
+
   if (schedules != "")
   {
+    // if an array
     if (typeof schedules === 'object')
     {
       for (var i = 0; i < schedules.length; i++)
@@ -76,6 +112,9 @@ function placeCurrSchedLinks()
   }
 }
 
+/*
+** Prompts user to verify the rewrite request.
+*/
 function confirmRewrite(course)
 {
   gebi(course).disabled = true;
@@ -88,6 +127,9 @@ function confirmRewrite(course)
   gebi(course).disabled = false;
 }
 
+/*
+** Inserts buttons used to create schedules.
+*/
 function writeCreatorButtons(courses)
 {
   var xhr = new XMLHttpRequest();
@@ -98,6 +140,7 @@ function writeCreatorButtons(courses)
 
   if (courses.length > 0)
   {
+    // enable display
     btnParent.classList.remove("noScheds");
   }
 
@@ -125,6 +168,11 @@ function writeCreatorButtons(courses)
   }
 }
 
+/*
+** Assign correct disabled status to element.
+** Used to verify all tutors for a given course have 
+** completed their surveys.
+*/
 function setDisabled(id)
 {
   gebi(id).disabled = true;
@@ -134,16 +182,16 @@ function setDisabled(id)
   var param = "course=" + id;
   xhr.send(param);
   var response = xhr.responseText;
-  if (id == "TEST7")
-  {
-    gebi("response").innerHTML = response;
-  }
+
   if (response == "ready")
   {
     gebi(id).disabled = false;
   }
 }
 
+/*
+** Runs process to make schedule.
+*/
 function makeSchedule(course) 
 {
   gebi(course).disabled = true;
@@ -154,6 +202,9 @@ function makeSchedule(course)
   gebi(course).disabled = false;
 }
 
+/*
+** Converts availability times to formatted CSV files.
+*/
 function toCSV(course) 
 {
   var xhr = new XMLHttpRequest();
@@ -172,6 +223,9 @@ function toCSV(course)
   return success;
 }
 
+/*
+** Writes schedule output file.
+*/
 function writeSchedule(course) 
 {
   var xhr = new XMLHttpRequest();
@@ -183,19 +237,20 @@ function writeSchedule(course)
 
   if (response == "written")
   {
+    // link to open schedule for 'course'
     writeSchedLink(course);
   }
-  
-  /*
-    Updates for the Future: 
-    htmlSchedDoc w draggable entries?.....scriptaculous?
-    ..................................save on change????
-  */
 }
 
+/*
+** Inserts the button to access the schedule for 'course'.
+*/
 function writeSchedLink(course)
 {
+  // ensures no buttons for 'course' exist
   removeExistBtn(course);
+
+  // creates and adds button
   var schedButton = document.createElement("button");
   var btnVal = document.createAttribute("value");
   btnVal.value = course;
@@ -214,9 +269,13 @@ function writeSchedLink(course)
     
   var linkParent = gebi('schedLinks');
   linkParent.appendChild(schedButton);
+  // enable display
   linkParent.classList.remove("noScheds");
 }
 
+/*
+** Removes link to schedule for 'course'.
+*/
 function removeExistBtn(coursename)
 {
   var schedules = gebi("schedLinks").getElementsByTagName("button");
@@ -229,6 +288,9 @@ function removeExistBtn(coursename)
   }
 }
 
+/*
+** Opens the selected schedule in a new window element.
+*/
 function openSched(btnVal)
 {
   var course = btnVal.trim();

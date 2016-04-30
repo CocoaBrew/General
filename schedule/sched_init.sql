@@ -1,3 +1,9 @@
+/*
+- Dan Coleman
+- 
+- Initializes database tables for system use.
+*/
+
 use dac3251;
 
 create table courses(

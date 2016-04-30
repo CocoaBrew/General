@@ -2,6 +2,8 @@
 
 # Dan Coleman
 # Writes schedule from csv data
+# For tutor-scheduling system
+#
 
 import sys
 import csv
@@ -9,6 +11,7 @@ import random
 
 """ Throughout, hours refer to shifts, not full sixty-minute periods. """
 
+# Creates object to which hours can be assigned.
 class Tutor:
     ### Constructor for Tutor ###
     def __init__ (self, csvFilename, course):
@@ -88,7 +91,7 @@ class Tutor:
         if (blockList.count(hr) < 2):
             if len(self.assigned) < self.shiftsCleared:
                 availCode = int(self.status(hr[1:], hr[0]))
-                if (availCode == int(priority)): ##entire sect makeAssign??
+                if (availCode == int(priority)):
                     newBlocks.append(hr)
                     self.assigned.append(hr)
 
@@ -103,7 +106,7 @@ class Tutor:
         print ("mark assign")  #####
         return newBlocks
         
-    # Gets time for immediately preceding hr
+    # Gets time for immediately following hr
     def nextTime(self, hr):
         newTime = ''
         day = hr[0]
@@ -119,7 +122,7 @@ class Tutor:
             newTime = day + hour + newMin
         return newTime
         
-    # Gets time for immediately following hr
+    # Gets time for immediately preceding hr
     def prevTime(self, hr):
         newTime = ''
         day = hr[0]
@@ -135,7 +138,8 @@ class Tutor:
             newTime = day + newHour + newMin
         return newTime
     
-    
+
+# Assembles information and creates an associated schedule.
 class Schedule:
     ### Constructor for Schedule ###
     def __init__(self, course):
@@ -186,11 +190,15 @@ class Schedule:
         
     # Create the tutoring schedule
     def makeSchedule(self):
-        UPP_BOUND = 25  # limits high priority runs
+        UPP_BOUND = 100  # limits high priority runs
         ALPHA = .85
+        priority = 1
         countRuns = 0
         while not self.schedDone(ALPHA):
-            priority = 1
+            # mix up hrs content
+            if (countRuns % 10 == 0):
+                random.shuffle(self.reqHrs)
+            # change priority based on bound condition
             if (countRuns * ALPHA >= UPP_BOUND):
                 priority = 0
             self.blockHrs = []  # hrs that are already assigned
@@ -200,8 +208,8 @@ class Schedule:
                     #if (self.blockHrs.count(hr) < 2):
                         self.blockHrs.extend(tutor.assign(hr, 
                             self.blockHrs, self.reqHrs, priority))
-            self.checkTutorsFull(True)
-            countRuns = countRuns + 1
+            self.checkTutorsFull()
+            countRuns += 1
 
         self.reqHrs = self.putNamesToHrs()
         self.formatOutput()
@@ -224,7 +232,7 @@ class Schedule:
 
     # Verifies whether schedule has assigned each tutor 
     # to the number of hours he is cleared to work
-    def checkTutorsFull(self, assumeFull):
+    def checkTutorsFull(self):
         success = True
         incomplete = []
         for t in self.tutors:                     ### 
@@ -236,7 +244,7 @@ class Schedule:
                 for hr in self.reqHrs:
                     if hr not in tut.assigned:
                         tut.assign(hr, self.blockHrs, self.reqHrs, 0)
-            return self.checkTutorsFull(True)
+            return self.checkTutorsFull()
         else:
             return True
     
@@ -256,9 +264,9 @@ class Schedule:
                         markedHrs.append([entry, []])
                         markedHrs[-1][1].append(t.name)
                 
-        print (self.reqHrs)
-        for i in markedHrs:
-            print i
+        print (self.reqHrs) ######
+        for i in markedHrs: #######
+            print i         ######
 
         return markedHrs
 
@@ -269,6 +277,7 @@ class Schedule:
             '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', 
             '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', 
             '19:00', '19:30', '20:00', '20:30']
+        # sort hours by day
         shrs = []
         mhrs = []
         thrs = []
@@ -288,14 +297,16 @@ class Schedule:
                 rhrs.append(hr)
             elif (hr[0][0] == 'f'):
                 fhrs.append(hr)
-        print (shrs)
-        print (mhrs)
-        print (thrs)
-        print (whrs)
-        print (rhrs)
-        print (fhrs)
+        print (shrs)#######
+        print (mhrs)#####
+        print (thrs)#######
+        print (whrs)#######
+        print (rhrs)#######
+        print (fhrs)#####
         filename = "sched_files/" + self.course + ".html"
         fout = open(filename, 'w')
+
+        # format header info
         htmlOut = '''
         <!DOCTYPE html>
         <html>
@@ -390,17 +401,21 @@ class Schedule:
           </body>
         </html>
             '''
+
         fout.write(htmlOut)
         fout.close() 
-        
-        
+
+
 def main():
+    # get course from execution args
     coursename = ''
     if (len(sys.argv) > 1):
         coursename = sys.argv[1].strip()
+
+    # Make schedule for 'coursename'
     sched = Schedule(coursename)
     sched.makeSchedule()
-    #sched.schedDone(.5)
+
     print ("successful")
 
     

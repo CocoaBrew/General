@@ -1,3 +1,7 @@
+/*
+  Author: Dan Coleman
+  Stylesheet for tutor-scheduling system.
+*/
 body
 {
   font-family: sans-serif;
@@ -74,25 +78,31 @@ th
   text-align: center;
 }
 
-#logoutlink
-{
-  text-align: right;
-  float: right;
-  position: fixed;
-  right: 1cm;
-  top: 1cm;
-}
-
-#pswdchange
+#pswdchange, #contactchange
 {
   text-align: center;
   margin: .6cm;
   margin-top: .7cm;
 }
 
-#pswdresetinput
+#pswdresetinput, #contactinput
 {
   text-align: right;
+}
+
+#contactinput
+{
+  width: 90%;
+  margin: auto;
+}
+
+#optpanel
+{
+  text-align: right;
+  float: right;
+  position: fixed;
+  right: 1cm;
+  top: 1cm;
 }
 
 #times

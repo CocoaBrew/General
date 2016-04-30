@@ -14,9 +14,6 @@
   
   $loggedin = false;
   $name = '';
-  if (isset($_GET['c'])):
-    $_SESSION['course'] = trim(htmlspecialchars($_GET['c']));
-  endif;
   
   if(!(isset($_SESSION["name"]))):
     if(isset($_POST['pid'])):

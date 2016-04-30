@@ -3,9 +3,10 @@
   error_reporting(E_ALL);
   ini_set('display_errors', '1');
 
-  require_once('../../capstone/dblogin_sched.php');
   session_start();
+  require_once('../../capstone/dblogin_sched.php');
 
+  // check admin status
   if (!isset($_SESSION['name']) || !isset($_SESSION['admin']) || 
     $_SESSION['admin'] != 'true'):
     header('Location: login.php');
@@ -16,6 +17,7 @@
     array(PDO::ATTR_EMULATE_PREPARES => false,
           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
   
+  # get names of all courses
   $query = "select title from courses";
   $stmt = $db->prepare($query);
   $stmt->execute();
@@ -31,6 +33,7 @@
     $stmt->bindParam(':course', $course['title'], PDO::PARAM_STR);
     $stmt->execute();
     $names = $stmt->fetchAll();
+    # remove tutor CSV files
     foreach ($names as $name):
       $nameList = explode('+', $name[0]);
       $fullname = $nameList[0] . $nameList[1];

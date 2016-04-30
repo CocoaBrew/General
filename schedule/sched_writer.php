@@ -9,6 +9,7 @@
   if (isset($_POST['course'])):
     $course = trim(htmlspecialchars($_POST['course']));
   else:
+    // verify admin
     if (isset($_SESSION['admin'])):
       header('Location: manager.php');
     else:
@@ -18,6 +19,7 @@
   
   $retVal = "failed";
   
+  # create file
   $dir = "sched_files/";
   if (!file_exists($dir)):
     mkdir($dir, 0707);
@@ -27,10 +29,12 @@
   touch($filename);
   chmod($filename, 0606);
 
+  # run scheduling program
   if (exec("python schedule.py $course") == "successful"):
     $retVal = "written";
   endif;
 
+  # return success status
   echo $retVal; 
 
 ?>

@@ -27,7 +27,6 @@
     
     return $hour_data;
   }
-  
   function makeHrsList($hour_info)
   {
     $hour_list = array();
@@ -62,7 +61,6 @@
     
     return $hour_list;
   }
-  
   function findHrs($week_hours)
   { 
     return (makeHrsList(getDayHrs($week_hours)));
@@ -75,13 +73,14 @@
   
   $coursename = $_SESSION['course'];
 
+  # get hours desired for tutoring
   $query = "select sun, mon, tue, wed, thu, fri from courses 
     where title = :coursename";
   $stmt = $db->prepare($query);
   $stmt->bindParam(':coursename', $coursename, PDO::PARAM_STR);
   $stmt->execute();
   $week_array = $stmt->fetchAll();
-
+  # enumerate hours for purposes of listing later
   $hourlist = findHrs($week_array);
   
   # get name from db/session for on-screen display

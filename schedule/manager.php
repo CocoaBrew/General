@@ -5,6 +5,7 @@
   
   session_start();
   
+  // checks admin status
   if (!isset($_SESSION['name']) || !isset($_SESSION['admin']) || 
     $_SESSION['admin'] != 'true'):
     header('Location: login.php');
@@ -24,13 +25,18 @@
   <body>
     <h1>Tutor Manager</h1>
     
-    <aside id="logoutlink">
+    <aside id="optpanel">
       <p>
         <a href="logout.php">Logout</a>
       </p>
       <p>
         <button type="button" id="adminpswd">
           Reset Admin Passcode
+        </button>
+      </p>
+      <p>
+        <button type="button" id="editcontact">
+          Edit Main Contact
         </button>
       </p>
     </aside>
@@ -50,7 +56,6 @@
         </p>
       </div>
     
-      <!-- section with existing schedules when available -->
       <section id="schedLinks" class="noScheds">
         <h2>Schedules</h2>
       </section>

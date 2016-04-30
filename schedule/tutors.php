@@ -53,7 +53,7 @@
         $stmt->bindParam(':edu', $ed_level, PDO::PARAM_STR);
         $stmt->bindParam(':hrs', $cleared_hrs, PDO::PARAM_STR);
         $stmt->execute();
-        
+        # save tutor info
         $query = "insert into course_for_tutor (id, course)
           values (:id, :course)";
         $stmt = $db->prepare($query);

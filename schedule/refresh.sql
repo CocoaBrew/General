@@ -1,3 +1,9 @@
+/*
+- Dan Coleman
+- 
+- Clears and re-initializes system database tables.
+*/
+
 use dac3251;
 
 drop table courses;

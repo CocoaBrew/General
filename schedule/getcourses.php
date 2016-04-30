@@ -10,6 +10,7 @@
     array(PDO::ATTR_EMULATE_PREPARES => false,
           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 
+  # retrieve names of all courses
   $query = "select title from courses";
   $stmt = $db->prepare($query);
   $stmt->execute();

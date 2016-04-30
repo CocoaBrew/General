@@ -3,12 +3,18 @@
   error_reporting(E_ALL);
   ini_set('display_errors', '1');
 
+  session_start();
   require_once('../../capstone/dblogin_sched.php');
+
+  /*
+    Explanation of values for conversion given on line 90.
+  */
 
   $course = '';
   if (isset($_POST['coursename'])):
     $course = trim(htmlspecialchars($_POST['coursename']));
   else:
+    //verify admin status
     if (isset($_SESSION['admin'])):
       header('Location: manager.php');
     else:
@@ -51,6 +57,7 @@
     touch($destFile);
     chmod($destFile, 0646);
 
+    # take info from db
     $query = "select sbusy, mbusy, tbusy, wbusy, rbusy, fbusy, 
       spref, mpref, tpref, wpref, rpref, fpref 
       from available as a inner join tutors as t
@@ -74,6 +81,7 @@
     $rpref = explode('/', $days['rpref']);
     $fpref = explode('/', $days['fpref']);
 
+    # put info in file
     $outFile = fopen($destFile, 'w');
 
     $time = '09:00';
@@ -153,8 +161,6 @@
 
     $result = "created";
   endforeach;
-
-  //$result = "created";
 
   echo $result;
 
