@@ -77,8 +77,6 @@
           <input type="password" name="pid" id="identifier" pattern="(\w|\d)+"
             autofocus="autofocus" />
           
-          <input type="hidden" name="course" value="<?= $course ?>" />
-          
           <button type="submit" id="loginbutton">Login</button>
         </form>
       </p>
