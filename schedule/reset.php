@@ -54,6 +54,7 @@
   foreach (glob($schedDir) as $file):
     unlink($file);
   endforeach;
+
   
   # Reset db info
   $query = "drop table courses";

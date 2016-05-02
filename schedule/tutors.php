@@ -91,7 +91,7 @@
         <form id="tutortotal" action="tutors.php" method="post">
           <label for="numtutors">Number of Tutors: </label>
           <input type="number" name="numtutors" id="numtutors" 
-            pattern="[0-9]+" placeholder="<?= $tutorcount ?>"/>
+            placeholder="<?= $tutorcount ?>"/>
         
           <button type="submit" form="tutortotal">
             Submit

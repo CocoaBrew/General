@@ -71,6 +71,7 @@
     <h1>Login</h1>
     
     <?php if (!$loggedin): ?>
+
       <p>
         <form id="loginframe" action="login.php" method="post">
           <label for="identifier">Personal Identifier: </label>

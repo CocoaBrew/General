@@ -184,6 +184,12 @@
       $hours = array($sun, $mon, $tue, $wed, $thu, $fri);
       storeHrs($hours, $filename);
       
+      # Retrieves contact information.
+      $infoParts = file('contact.txt', FILE_IGNORE_NEW_LINES);
+      $contact_name = $infoParts[0];
+      $contact_email = $infoParts[1];
+      $survey_url = $infoParts[2];
+
       # Send emails with survey link
       $query = "select t.name, t.email, t.education, t.work_hrs 
         from tutors as t inner join course_for_tutor as c
@@ -263,12 +269,6 @@
     endif;
   endif;
 
-  # Retrieves contact information.
-  $infoParts = file('contact.txt', FILE_IGNORE_NEW_LINES);
-  $contact_name = $infoParts[0];
-  $contact_email = $infoParts[1];
-  $survey_url = $infoParts[2];
-    
 ?>
 <!DOCTYPE html>
 <html>
@@ -287,7 +287,7 @@
     </p>
     
     <?php if (!$success): ?>
-    <section id="courseinfo">
+    <section id="courseinfo" class="maincontent">
       <form id="makecourse" action="setup_course.php" method="post">
         <?php if ($title != ''): ?>
           <h2>Course: <?= $title ?></h2>
@@ -302,49 +302,49 @@
           <p>
             <label>Sunday &mdash; </label>
             <label for="s1">From: </label>
-            <input type="time" name="sunstart" id="s1" placeholder="0900"/>
+            <input type="time" name="sunstart" id="s1"/>
             <label for="s2">To: </label>
-            <input type="time" name="sunend" id="s2" placeholder="1800"/>
+            <input type="time" name="sunend" id="s2"/>
           </p>
           
           <p>
             <label>Monday &mdash; </label>
             <label for="m1">From: </label>
-            <input type="time" name="monstart" id="m1" placeholder="0900"/>
+            <input type="time" name="monstart" id="m1"/>
             <label for="m2">To: </label>
-            <input type="time" name="monend" id="m2" placeholder="1800"/>
+            <input type="time" name="monend" id="m2"/>
           </p>
           
           <p>
             <label>Tuesday &mdash; </label>
             <label for="t1">From: </label>
-            <input type="time" name="tuestart" id="t1" placeholder="0900"/>
+            <input type="time" name="tuestart" id="t1"/>
             <label for="t2">To: </label>
-            <input type="time" name="tueend" id="t2" placeholder="1800"/>
+            <input type="time" name="tueend" id="t2"/>
           </p>
           
           <p>
             <label>Wednesday &mdash; </label>
             <label for="w1">From: </label>
-            <input type="time" name="wedstart" id="w1" placeholder="0900"/>
+            <input type="time" name="wedstart" id="w1"/>
             <label for="w2">To: </label>
-            <input type="time" name="wedend" id="w2" placeholder="1800"/>
+            <input type="time" name="wedend" id="w2"/>
           </p>
           
           <p>
             <label>Thursday &mdash; </label>
             <label for="r1">From: </label>
-            <input type="time" name="thustart" id="r1" placeholder="0900"/>
+            <input type="time" name="thustart" id="r1"/>
             <label for="r2">To: </label>
-            <input type="time" name="thuend" id="r2" placeholder="1800"/>
+            <input type="time" name="thuend" id="r2"/>
           </p>
           
           <p>
             <label>Friday &mdash; </label>
             <label for="f1">From: </label>
-            <input type="time" name="fristart" id="f1" placeholder="0900"/>
+            <input type="time" name="fristart" id="f1"/>
             <label for="f2">To: </label>
-            <input type="time" name="friend" id="f2" placeholder="1800"/>
+            <input type="time" name="friend" id="f2"/>
           </p>
         </div>
           
