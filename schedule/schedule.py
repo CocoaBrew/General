@@ -28,7 +28,7 @@ class Tutor:
         noEd = nameParts[0][:-2]
         nameList = []
         for i in noEd:
-            if not i.isdigit():
+            if (not i.isdigit()):
                 nameList.append(i)
         name = ''.join(nameList)
         return name
@@ -44,7 +44,7 @@ class Tutor:
         noEd = nameParts[0][:-2]
         numHrsList = []
         for i in noEd:
-            if i.isdigit():
+            if (i.isdigit()):
                 numHrsList.append(i)
         numHrs = int(''.join(numHrsList))
         return numHrs
@@ -89,7 +89,7 @@ class Tutor:
     def assign(self, hr, blockList, reqList, priority):
         newBlocks = []
         if (blockList.count(hr) < 2):
-            if len(self.assigned) < self.shiftsCleared:
+            if (len(self.assigned) < self.shiftsCleared):
                 availCode = int(self.status(hr[1:], hr[0]))
                 if (availCode == int(priority)):
                     newBlocks.append(hr)
@@ -111,13 +111,13 @@ class Tutor:
         newTime = ''
         day = hr[0]
         hour = hr[1:3]
-        if hr[-2:] == '30':
+        if (hr[-2:] == '30'):
             newMin = ':00'
             newHour = str(int(hour) + 1)
-            if len(newHour) != 2:
+            if (len(newHour) != 2):
                 newHour = '0' + newHour
             newTime = day + newHour + newMin
-        elif hr[-2:] == '00':
+        elif (hr[-2:] == '00'):
             newMin = ':30'
             newTime = day + hour + newMin
         return newTime
@@ -127,13 +127,13 @@ class Tutor:
         newTime = ''
         day = hr[0]
         hour = hr[1:3]
-        if hr[-2:] == '30':
+        if (hr[-2:] == '30'):
             newMin = ':00'
             newTime = day + hour + newMin
-        elif hr[-2:] == '00':
+        elif (hr[-2:] == '00'):
             newMin = ':30'
             newHour = str(int(hour) - 1)
-            if len(newHour) != 2:
+            if (len(newHour) != 2):
                 newHour = '0' + newHour
             newTime = day + newHour + newMin
         return newTime
@@ -190,25 +190,31 @@ class Schedule:
         
     # Create the tutoring schedule
     def makeSchedule(self):
-        UPP_BOUND = 100  # limits high priority runs
-        ALPHA = .85
+        PRIORITY_BOUND = 100  # limits high priority runs
+        #ALPHA = .3
+        END_CONSTANT = 10  # constant to determine escape condition
+        DEPTH = 2
         priority = 1
         countRuns = 0
-        while not self.schedDone(ALPHA):
+        # leave loop if run goes past escape condition
+        while ((not self.schedDone()) and 
+            countRuns < PRIORITY_BOUND * END_CONSTANT):
             # mix up hrs content
             if (countRuns % 10 == 0):
                 random.shuffle(self.reqHrs)
             # change priority based on bound condition
-            if (countRuns * ALPHA >= UPP_BOUND):
+            if (countRuns >= PRIORITY_BOUND):
                 priority = 0
             self.blockHrs = []  # hrs that are already assigned
             for hr in self.reqHrs:
                 ##if (self.blockHrs.count(hr) <= 2):  ##format reqHrs -> s09:30
                 for tutor in self.tutors:
                     #if (self.blockHrs.count(hr) < 2):
+                    if (tutor.shiftsCleared > len(tutor.assigned)):
                         self.blockHrs.extend(tutor.assign(hr, 
                             self.blockHrs, self.reqHrs, priority))
-            self.checkTutorsFull()
+
+            self.checkTutorsFull(1)
             countRuns += 1
 
         self.reqHrs = self.putNamesToHrs()
@@ -216,35 +222,37 @@ class Schedule:
     
     # Verify whether schedule meets margin of error
     # for what percentage of shifts are filled. 
-    # Percentage = alpha * 100
-    def schedDone(self, alpha):
+    # ACCEPTABLE => considered a passable schedule
+    def schedDone(self):
         done = True
+        ACCEPTABLE = .5
         unfilled = []
         for hr in self.reqHrs:
-            if self.blockHrs.count(hr) == 0:
+            if (self.blockHrs.count(hr) == 0):
                 unfilled.append(hr)
         #(len(self.reqHrs) - len(unfilled)) / len(self.reqHrs)
         fullRatio =  1 - (float(len(unfilled)) / len(self.reqHrs))
-        if (fullRatio < alpha):
+        if (fullRatio < ACCEPTABLE):
             done = False
         print ("mark done check")  ######
         return done
 
     # Verifies whether schedule has assigned each tutor 
     # to the number of hours he is cleared to work
-    def checkTutorsFull(self):
+    def checkTutorsFull(self, depth):
         success = True
         incomplete = []
-        for t in self.tutors:                     ### 
-            if t.shiftsCleared != len(t.assigned): ##can comment
+        for t in self.tutors:
+            if (t.shiftsCleared > len(t.assigned)):
                 incomplete.append(t) 
-                success = False              ## out these temp
-        if not success:
+                success = False
+        if (not success and depth > 0):
             for tut in incomplete:
                 for hr in self.reqHrs:
-                    if hr not in tut.assigned:
+                    if (hr not in tut.assigned and self.blockHrs.count(hr) < 2
+                        and tut.shiftsCleared > len(tut.assigned)):
                         tut.assign(hr, self.blockHrs, self.reqHrs, 0)
-            return self.checkTutorsFull()
+            return self.checkTutorsFull(depth - 1)
         else:
             return True
     
@@ -259,7 +267,8 @@ class Schedule:
                     for hr in markedHrs:
                         if (hr[0] == entry and marked == False):
                             marked = True
-                            hr[1].append(t.name)
+                            if (t.name not in hr[1] and len(hr[1]) < 2):
+                                hr[1].append(t.name)
                     if (marked == False):
                         markedHrs.append([entry, []])
                         markedHrs[-1][1].append(t.name)
