@@ -1,7 +1,7 @@
 <?php
   // Dan Coleman
-  error_reporting(E_ALL);
-  ini_set('display_errors', '1');
+  //error_reporting(E_ALL);
+  //ini_set('display_errors', '1');
 
   require_once('../../capstone/dblogin_sched.php');
 
