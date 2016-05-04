@@ -74,7 +74,7 @@
         foreach($_POST['subusyhrs'] as $time):
           $suntimes[] = htmlspecialchars($time);
         endforeach;
-        $busysun = implode('/', $smotimes);
+        $busysun = implode('/', $suntimes);
       endif;
       
       if (isset($_POST['mobusyhrs'])):
@@ -169,7 +169,7 @@
     <title>Automated Response</title>
   </head>
 
-  <body>
+  <body class="maincontent">
     <h1>Survey Completion</h1>
     
     <p>

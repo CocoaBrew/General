@@ -49,7 +49,7 @@ function resetData()
 */
 function passcodeDialog()
 {
-  var h = 275;
+  var h = 300;
   var w = 375;
   var left = (window.screen.width/2) - (w/2);
   var top = (window.screen.height/3) - (h/2);
@@ -64,7 +64,7 @@ function passcodeDialog()
 function contactDialog()
 {
   // height and width
-  var h = 275;
+  var h = 250;
   var w = 450;
 
   // center in screen
@@ -125,6 +125,52 @@ function confirmRewrite(course)
     makeSchedule(course);
   }
   gebi(course).disabled = false;
+}
+
+/*
+** Inserts the button to access the schedule for 'course'.
+*/
+function writeSchedLink(course)
+{
+  // ensures no buttons for 'course' exist
+  removeExistBtn(course);
+
+  // creates and adds button
+  var schedButton = document.createElement("button");
+  var btnVal = document.createAttribute("value");
+  btnVal.value = course;
+  schedButton.attributes.setNamedItem(btnVal);
+  
+  var attr = document.createAttribute("type");
+  attr.value = "button";
+  schedButton.attributes.setNamedItem(attr);
+  schedButton.classList.add("creator");
+  schedButton.innerHTML = course;
+    
+  schedButton.addEventListener("click", function()
+  {
+    openSched(this.value);
+  });
+    
+  var linkParent = gebi('schedLinks');
+  linkParent.appendChild(schedButton);
+  // enable display
+  linkParent.classList.remove("noScheds");
+}
+
+/*
+** Removes link to schedule for 'course'.
+*/
+function removeExistBtn(coursename)
+{
+  var schedules = gebi("schedLinks").getElementsByTagName("button");
+  for (var i = 0; i < schedules.length; i++)
+  {
+    if (schedules[i].value == coursename)
+    {
+      schedules[i].parentNode.removeChild(schedules[i]);
+    }
+  }
 }
 
 /*
@@ -228,63 +274,18 @@ function toCSV(course)
 */
 function writeSchedule(course) 
 {
+  var tps = gebi('tutpershift').value;
   var xhr = new XMLHttpRequest();
   xhr.open("POST", "sched_writer.php", false);
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  var param = "course=" + course;
+  var param = "course=" + course + "&tps=" + tps;
   xhr.send(param);
   var response = xhr.responseText.trim();
 
   if (response == "written")
   {
-    // link to open schedule for 'course'
-    writeSchedLink(course);
-  }
-}
-
-/*
-** Inserts the button to access the schedule for 'course'.
-*/
-function writeSchedLink(course)
-{
-  // ensures no buttons for 'course' exist
-  removeExistBtn(course);
-
-  // creates and adds button
-  var schedButton = document.createElement("button");
-  var btnVal = document.createAttribute("value");
-  btnVal.value = course;
-  schedButton.attributes.setNamedItem(btnVal);
-  
-  var attr = document.createAttribute("type");
-  attr.value = "button";
-  schedButton.attributes.setNamedItem(attr);
-  schedButton.classList.add("creator");
-  schedButton.innerHTML = course;
-    
-  schedButton.addEventListener("click", function()
-  {
-    openSched(this.value);
-  });
-    
-  var linkParent = gebi('schedLinks');
-  linkParent.appendChild(schedButton);
-  // enable display
-  linkParent.classList.remove("noScheds");
-}
-
-/*
-** Removes link to schedule for 'course'.
-*/
-function removeExistBtn(coursename)
-{
-  var schedules = gebi("schedLinks").getElementsByTagName("button");
-  for (var i = 0; i < schedules.length; i++)
-  {
-    if (schedules[i].value == coursename)
-    {
-      schedules[i].parentNode.removeChild(schedules[i]);
-    }
+    // reloads to establish new link
+    location.reload(true);
   }
 }
 

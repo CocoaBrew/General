@@ -4,12 +4,15 @@
 # Writes schedule from csv data
 # For tutor-scheduling system
 #
+# Spring 2016 Senior Capstone
 
 import sys
 import csv
 import random
 
 """ Throughout, hours refer to shifts, not full sixty-minute periods. """
+
+##### TUTOR-SCHEDULING SYSTEM #####
 
 # Creates object to which hours can be assigned.
 class Tutor:
@@ -86,67 +89,29 @@ class Tutor:
         
     # Attempts to add a given hour
     # to the schedule of this tutor
-    def assign(self, hr, blockList, reqList, priority):
+    def assign(self, hr, blockList, reqList, tutorsPerShift, priority):
         newBlocks = []
-        if (blockList.count(hr) < 2):
+        if (blockList.count(hr) < tutorsPerShift):
             if (len(self.assigned) < self.shiftsCleared):
                 availCode = int(self.status(hr[1:], hr[0]))
                 if (availCode == int(priority)):
                     newBlocks.append(hr)
                     self.assigned.append(hr)
 
-                    '''nt = self.nextTime(hr)
-                    pt = self.prevTime(hr)
-                
-                   """newBlocks.extend(self.assign(nt, blockList.append(hr),
-                       reqList, priority - 1))
-                    newBlocks.extend(self.assign(pt, blockList.append(hr),
-                        reqList, priority - 1))"""'''
-
         print ("mark assign")  #####
         return newBlocks
-        
-    # Gets time for immediately following hr
-    def nextTime(self, hr):
-        newTime = ''
-        day = hr[0]
-        hour = hr[1:3]
-        if (hr[-2:] == '30'):
-            newMin = ':00'
-            newHour = str(int(hour) + 1)
-            if (len(newHour) != 2):
-                newHour = '0' + newHour
-            newTime = day + newHour + newMin
-        elif (hr[-2:] == '00'):
-            newMin = ':30'
-            newTime = day + hour + newMin
-        return newTime
-        
-    # Gets time for immediately preceding hr
-    def prevTime(self, hr):
-        newTime = ''
-        day = hr[0]
-        hour = hr[1:3]
-        if (hr[-2:] == '30'):
-            newMin = ':00'
-            newTime = day + hour + newMin
-        elif (hr[-2:] == '00'):
-            newMin = ':30'
-            newHour = str(int(hour) - 1)
-            if (len(newHour) != 2):
-                newHour = '0' + newHour
-            newTime = day + newHour + newMin
-        return newTime
     
 
 # Assembles information and creates an associated schedule.
 class Schedule:
     ### Constructor for Schedule ###
-    def __init__(self, course):
+    def __init__(self, course, tps):
         self.course = course
         self.tutors = self.getAllTutors()
-        self.reqHrs = self.hrsForTutoring() #####
+        self.reqHrs = self.hrsForTutoring()
         self.blockHrs = []
+        self.tutorsPerShift = tps
+        self.percentTutorsFilled = 0
         
     # Instantiate all tutors
     def getAllTutors(self):
@@ -191,9 +156,7 @@ class Schedule:
     # Create the tutoring schedule
     def makeSchedule(self):
         PRIORITY_BOUND = 100  # limits high priority runs
-        #ALPHA = .3
         END_CONSTANT = 10  # constant to determine escape condition
-        DEPTH = 2
         priority = 1
         countRuns = 0
         # leave loop if run goes past escape condition
@@ -205,24 +168,25 @@ class Schedule:
             # change priority based on bound condition
             if (countRuns >= PRIORITY_BOUND):
                 priority = 0
-            self.blockHrs = []  # hrs that are already assigned
+            # clear hrs lists
+            self.emptyHrs()
             for hr in self.reqHrs:
-                ##if (self.blockHrs.count(hr) <= 2):  ##format reqHrs -> s09:30
                 for tutor in self.tutors:
-                    #if (self.blockHrs.count(hr) < 2):
                     if (tutor.shiftsCleared > len(tutor.assigned)):
                         self.blockHrs.extend(tutor.assign(hr, 
-                            self.blockHrs, self.reqHrs, priority))
-
-            self.checkTutorsFull(1)
+                            self.blockHrs, self.reqHrs, self.tutorsPerShift,
+                            priority))
+            DEPTH = 1
+            self.checkTutorsFull(DEPTH)
             countRuns += 1
 
+        self.percentTutorsFilled = self.percentTutFull()
         self.reqHrs = self.putNamesToHrs()
         self.formatOutput()
     
     # Verify whether schedule meets margin of error
     # for what percentage of shifts are filled. 
-    # ACCEPTABLE => considered a passable schedule
+    # ACCEPTABLE => schedule with enough timeslots taken
     def schedDone(self):
         done = True
         ACCEPTABLE = .5
@@ -230,12 +194,33 @@ class Schedule:
         for hr in self.reqHrs:
             if (self.blockHrs.count(hr) == 0):
                 unfilled.append(hr)
-        #(len(self.reqHrs) - len(unfilled)) / len(self.reqHrs)
+        ## ((# self.reqHrs) - (# unfilled)) / (# self.reqHrs)
         fullRatio =  1 - (float(len(unfilled)) / len(self.reqHrs))
         if (fullRatio < ACCEPTABLE):
             done = False
-        print ("mark done check")  ######
+        for t in self.tutors:
+            if (len(t.assigned) < t.shiftsCleared):
+                done = False
+
         return done
+
+    # Calculates ratio of tutors with fewer than their cleared hours
+    # to tutors who have all of their cleared hours
+    def percentTutFull(self):
+        numComplete = 0
+        for t in self.tutors:
+            if (len(t.assigned) == t.shiftsCleared):
+                numComplete += 1
+        return (float(numComplete) / len(self.tutors) * 100)
+
+    # Empties blocked hours and 
+    # assigned hours for each tutor
+    def emptyHrs(self):
+        # assigned hrs in general
+        self.blockHrs = []
+        # assigned hrs for each tutor
+        for t in self.tutors:
+            t.assigned = []
 
     # Verifies whether schedule has assigned each tutor 
     # to the number of hours he is cleared to work
@@ -248,10 +233,13 @@ class Schedule:
                 success = False
         if (not success and depth > 0):
             for tut in incomplete:
+                random.shuffle(self.reqHrs)
                 for hr in self.reqHrs:
-                    if (hr not in tut.assigned and self.blockHrs.count(hr) < 2
+                    if (hr not in tut.assigned and 
+                        self.blockHrs.count(hr) < self.tutorsPerShift
                         and tut.shiftsCleared > len(tut.assigned)):
-                        tut.assign(hr, self.blockHrs, self.reqHrs, 0)
+                        self.blockHrs.extend(tut.assign(hr, self.blockHrs, 
+                            self.reqHrs, self.tutorsPerShift, 0))
             return self.checkTutorsFull(depth - 1)
         else:
             return True
@@ -267,20 +255,16 @@ class Schedule:
                     for hr in markedHrs:
                         if (hr[0] == entry and marked == False):
                             marked = True
-                            if (t.name not in hr[1] and len(hr[1]) < 2):
+                            if (t.name not in hr[1]):
                                 hr[1].append(t.name)
                     if (marked == False):
                         markedHrs.append([entry, []])
                         markedHrs[-1][1].append(t.name)
-                
-        print (self.reqHrs) ######
-        for i in markedHrs: #######
-            print i         ######
 
         return markedHrs
 
     # Writes created schedule to file
-    def formatOutput(self):  ######
+    def formatOutput(self):
         # Schedule will always present these hours
         SCHED_HRS = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', 
             '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', 
@@ -407,22 +391,31 @@ class Schedule:
               </tr>'''
         htmlOut = htmlOut + '''
             </table>
+            <p>
+              '''
+        htmlOut = htmlOut + ("Percent of tutors with filled schedules: %s." 
+            % ("%.1f" % (self.percentTutorsFilled) ))
+        htmlOut = htmlOut + '''
+            </p>
           </body>
         </html>
             '''
-
         fout.write(htmlOut)
         fout.close() 
 
 
 def main():
-    # get course from execution args
+    # default number of tutors during a shift
+    tps = 2
+
+    # get course and num of tutors from execution args
     coursename = ''
     if (len(sys.argv) > 1):
         coursename = sys.argv[1].strip()
+        tps = int(sys.argv[2].strip())
 
     # Make schedule for 'coursename'
-    sched = Schedule(coursename)
+    sched = Schedule(coursename, tps)
     sched.makeSchedule()
 
     print ("successful")

@@ -73,8 +73,8 @@ th
   border-color: Black;
   border-style: solid;
   padding: .5cm;
-  margin-right: 8cm;
-  margin-left: 8cm;
+  width: 50%;
+  margin: auto;
   text-align: center;
 }
 
@@ -82,7 +82,6 @@ th
 {
   text-align: center;
   margin: .6cm;
-  margin-top: .7cm;
 }
 
 #pswdresetinput, #contactinput

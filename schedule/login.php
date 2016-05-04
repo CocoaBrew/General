@@ -41,7 +41,12 @@
           $name = $ret_vals[0]["name"];
           $_SESSION["name"] = $name;
           $_SESSION['course'] = $ret_vals[0]['course'];
-          if (isset($_SESSION['course'])):
+          $query = "select sbusy from available where id = :pid";
+          $stmt = $db->prepare($query);
+          $stmt->bindParam(':pid', $pid, PDO::PARAM_STR);
+          $stmt->execute();
+          $entries = $stmt->fetchAll();
+          if (isset($_SESSION['course']) && count($entries) == 0):
             header("Location: survey.php");
           else:
             header('Location: logout.php');

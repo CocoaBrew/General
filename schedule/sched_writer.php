@@ -6,8 +6,10 @@
   session_start();
 
   $course = '';
-  if (isset($_POST['course'])):
+  $tutPerShift = 0;
+  if (isset($_POST['course']) && isset($_POST['tps'])):
     $course = trim(htmlspecialchars($_POST['course']));
+    $tutPerShift = trim(htmlspecialchars($_POST['tps']));
   else:
     // verify admin
     if (isset($_SESSION['admin'])):
@@ -30,7 +32,7 @@
   chmod($filename, 0606);
 
   # run scheduling program
-  if (exec("python schedule.py $course") == "successful"):
+  if (exec("python schedule.py $course $tutPerShift") == "successful"):
     $retVal = "written";
   endif;
 

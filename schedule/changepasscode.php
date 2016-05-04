@@ -65,6 +65,9 @@
   </head>
   <body>
     <section id="pswdchange">
+      <p class="comment">
+        If the name pair does not exist, a new Admin will be created.
+      </p>
       <form action="changepasscode.php" method="post">
         <div id="pswdresetinput">
           <p>

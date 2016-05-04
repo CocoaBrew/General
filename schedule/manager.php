@@ -49,6 +49,10 @@
     
       <div id="schedules" class="noScheds">
         <h2>Make Schedule</h2>
+        <p>
+          <label for="">Tutors per Shift: </label>
+          <input type="number" id="tutpershift" value="2" />
+        </p>
         <p class="comment">
           When all tutors for a particular course have completed their surveys,
           <br />the button for that course can be clicked to create the 
@@ -60,13 +64,11 @@
         <h2>Schedules</h2>
       </section>
     
-      <p id="response"></p><!-- should be removed on final thru-->
-    
-      <h2>Reset</h2>
       <p>
-        <span class="comment">
+        <h2>Reset</h2>
+        <p class="comment">
           This will clear all current course and tutor information. 
-        </span>
+        </p>
         <form id="dataclear" action="manager.php" method="post">
           <input type="submit" form="dataclear" name="clear" id="clear"
             value="Clear Data" /> 
